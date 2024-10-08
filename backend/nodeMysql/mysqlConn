@@ -1,0 +1,22 @@
+//var mysql      = require('mysql');
+
+
+// ES Modules 방식
+import mysql from 'mysql2';
+
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'root',
+  database : 'comm'
+});
+ 
+connection.connect();
+ 
+connection.query('select * from users', function (error, results, fields) {
+  if (error) throw error;
+  console.log('error: ', error);
+  console.log('results: ', results);
+});
+ 
+connection.end();

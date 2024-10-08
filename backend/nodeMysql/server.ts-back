@@ -1,0 +1,84 @@
+import express, { Request, Response } from 'express';
+import mysql from 'mysql2/promise';  // promise 기반의 mysql2 사용
+import cors from 'cors';
+// import { selectUsers } from 'src/sections/user/queries/user-view-seq'; // TypeScript로 변환된 모듈
+
+const app = express();
+const port = 3038;
+
+// CORS 활성화
+app.use(cors());
+app.use(express.json()); // req.body를 파싱하도록 설정
+
+// MySQL 데이터베이스 연결 함수
+const connectToDatabase = async () => {
+  return await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'comm',
+    
+  });
+};
+
+// 유저 데이터를 가져오는 API 엔드포인트
+// app.get('/api/users/search', async (req: Request, res: Response) => {
+//   try {
+//     const connection = await connectToDatabase();  // DB 연결
+//     const users = await selectUsers(connection);   // selectUsers 함수 호출
+//     console.log('유저 데이터:', users);
+//     res.json(users);  // 조회된 데이터를 JSON으로 반환
+//     connection.end();  // 연결 종료
+//   } catch (error) {
+//     console.error('유저 데이터 조회 오류:', error);
+//     res.status(500).json({ error: '데이터베이스 조회 오류' });
+//   }
+// });
+
+// 유저 데이터를 저장하는 API 엔드포인트
+app.post('/api/users/save', async (req: Request, res: Response) => {
+  const { user_id, user_nm, email, phone_no, pwd } = req.body;
+
+  if (!user_id || !user_nm || !email || !phone_no || !pwd) {
+    return res.status(400).json({ error: '모든 필드를 입력해야 합니다.' });
+  }
+
+  const sql = 'INSERT INTO users (user_id, user_name, email, phone_no, pwd) VALUES (?, ?, ?, ?, ?)';
+
+  try {
+    const connection = await connectToDatabase();  // DB 연결
+    const [results] = await connection.query(sql, [user_id, user_nm, email, phone_no, pwd]);
+    console.log('저장된 유저 데이터:', results);
+    res.status(201).json({ message: '유저가 성공적으로 저장되었습니다.', results });
+    connection.end();  // 연결 종료
+  } catch (error) {
+    console.error('유저 데이터 저장 오류:', error);
+    res.status(500).json({ error: '데이터베이스 오류' });
+  }
+});
+
+// 유저 데이터를 삭제하는 API 엔드포인트
+app.post('/api/users/delete', async (req: Request, res: Response) => {
+  const { user_id } = req.body;
+
+  if (!user_id) {
+    return res.status(400).json({ error: '사용자 정보가 올바르지 않습니다.' });
+  }
+
+  const sql = 'DELETE FROM users WHERE user_id = ?';
+
+  try {
+    const connection = await connectToDatabase();  // DB 연결
+    const [results] = await connection.query(sql, [user_id]);
+    res.status(201).json({ message: '유저가 성공적으로 삭제되었습니다.', results });
+    connection.end();  // 연결 종료
+  } catch (error) {
+    console.error('유저 데이터 삭제 오류:', error);
+    res.status(500).json({ error: '데이터베이스 오류' });
+  }
+});
+
+// 서버 시작
+app.listen(port, () => {
+  console.log(`서버가 http://localhost:${port}에서 실행 중입니다.`);
+});
