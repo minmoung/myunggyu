@@ -165,9 +165,11 @@ export function CodeView() {
     }
 
     const result = await saveRows(rows, insertUrl, updateUrl, deleteUrl);
-    if (result.message) {
-      // 서버의 경고 메시지 처리
-      showAlert(result.message, 'warning');
+    
+    if (result.success) {
+      // 상태값 갱신
+      setRows((prevRows) => updateStatus(prevRows));
+      showAlert(result.message, 'info');
     }
   };
 
