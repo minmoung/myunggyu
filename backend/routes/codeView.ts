@@ -72,7 +72,30 @@ router.post("/api/code/insert", (req, res) => {
   });
     
     
-router.post("/api/code/update", codeviewController.updateCode);
-router.post("/api/code/delete", codeviewController.deleteCode);
+router.post("/api/code/update", (req, res) => {
+
+    codeviewController.updateCode(req, res) 
+    .then(result => {
+        // 성공적인 응답 처리
+        res.status(200).json(result);
+    })
+    .catch(error => {
+        // 에러 발생 시 응답
+        res.status(500).json({ success: false, message: '서버에서 오류가 발생했습니다.', error: error.toString() });
+    });
+  });
+    
+router.post("/api/code/delete", (req, res) => {
+    
+    codeviewController.deleteCode(req, res) 
+    .then(result => {
+        // 성공적인 응답 처리
+        res.status(200).json(result);
+    })
+    .catch(error => {
+        // 에러 발생 시 응답
+        res.status(500).json({ success: false, message: '서버에서 오류가 발생했습니다.', error: error.toString() });
+    });
+  });
 
 export default router;

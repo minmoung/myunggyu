@@ -67,8 +67,8 @@ export async function updateUpCode(codeInfo: PostUpCode): Promise<number> {
 
   } catch (error) {
     // 오류 처리
-    console.error("Error updating user:", error);
-    throw new Error("Failed to update user");
+    console.error("Error updating query:", error);
+    throw new Error("Failed to update query");
   }
 }
 
@@ -124,7 +124,7 @@ export async function insertCode(codeInfo: PostCode): Promise<string> {
 }
 
 
-export async function updateCode(codeInfo: PostCode): Promise<number> {
+export async function updateCode(codeInfo: PostCode): Promise<string> {
   const {
     code_cd,
     code_nm,
@@ -134,10 +134,9 @@ export async function updateCode(codeInfo: PostCode): Promise<number> {
   } = codeInfo;
 
   const query: string = `
-    update users set
-      up_code_cd = ?
+    update codes set
+      code_nm = ?
       ,sort = ?
-      ,update_id = ?
       ,update_date = NOW()
     where up_code_cd = ?
       and code_cd = ?
@@ -146,11 +145,10 @@ export async function updateCode(codeInfo: PostCode): Promise<number> {
   try {
     // 데이터베이스 쿼리 실행
     const [result]: any = await db.execute(query, [
-      code_cd,
       code_nm,
-      up_code_cd,
       sort,
-      update_id,
+      up_code_cd,
+      code_cd,
     ]);
 
     // 업데이트된 행의 수를 반환
@@ -158,9 +156,10 @@ export async function updateCode(codeInfo: PostCode): Promise<number> {
 
   } catch (error) {
     // 오류 처리
-    console.error("Error updating user:", error);
-    throw new Error("Failed to update user");
+    console.error("Error updating query:", error);
+    throw new Error("Failed to update query");
   }
+ 
 }
 
 export async function deleteCode(codeInfo: PostCode): Promise<string> {

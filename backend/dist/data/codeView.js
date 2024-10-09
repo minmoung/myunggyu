@@ -22,13 +22,14 @@ exports.deleteCode = deleteCode;
 const database_1 = require("../nodeMysql/database");
 function searchUpCode() {
     return __awaiter(this, void 0, void 0, function* () {
-        const query = "select up_code_cd, up_code_nm, sort from up_codes";
+        const query = "select row_number() over (order by a.up_code_cd desc) as row_id, up_code_cd, up_code_nm, sort from up_codes a";
         return database_1.db.execute(query).then((result) => result[0]);
     });
 }
 // insert 전에 동일 code 체크
 function checkUpCode(codeInfo) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log('codeInfo  ::', codeInfo);
         const { up_code_cd } = codeInfo;
         const query = "select count(*) as cnt from up_codes where up_code_cd = ?";
         return database_1.db.execute(query, [up_code_cd]).then((result) => result[0]);
@@ -37,7 +38,7 @@ function checkUpCode(codeInfo) {
 function insertUpCode(codeInfo) {
     return __awaiter(this, void 0, void 0, function* () {
         const { up_code_cd, up_code_nm, sort, } = codeInfo;
-        const query = "insert into up_codes (up_code_cd, up_code_nm, sort, insert_id, insert_date) values (?, ?, ?, ?, NOW())";
+        const query = "insert into up_codes (up_code_cd, up_code_nm, sort, insert_date) values (?, ?, ?, NOW())";
         return database_1.db
             .execute(query, [
             up_code_cd,
@@ -51,21 +52,19 @@ function updateUpCode(codeInfo) {
     return __awaiter(this, void 0, void 0, function* () {
         const { up_code_cd, up_code_nm, sort, update_id, } = codeInfo;
         const query = `
-    update users set
-      up_code_cd = ?
+    update up_codes set
       up_code_nm = ?
       ,sort = ?
-      ,update_id = ?
+      
       ,update_date = NOW()
     where up_code_cd = ?
   `;
         try {
             // 데이터베이스 쿼리 실행
             const [result] = yield database_1.db.execute(query, [
-                up_code_cd,
                 up_code_nm,
                 sort,
-                update_id,
+                up_code_cd,
             ]);
             // 업데이트된 행의 수를 반환
             return result.affectedRows;
@@ -88,10 +87,12 @@ function deleteUpCode(codeInfo) {
             .then((result) => result[0].insertId);
     });
 }
-function searchCode() {
+function searchCode(searchInfo) {
     return __awaiter(this, void 0, void 0, function* () {
-        const query = "select code_cd, code_nm, up_code_cd, sort from codes";
-        return database_1.db.execute(query).then((result) => result[0]);
+        const [{ up_code_cd }] = searchInfo; // 배열에서 첫 번째 객체 추출
+        console.log("up_code_cd  ::", up_code_cd);
+        const query = "select row_number() over (order by a.code_cd desc) as row_id, a.code_cd, a.code_nm, a.up_code_cd, a.sort from codes a where a.up_code_cd = ?";
+        return database_1.db.execute(query, [up_code_cd,]).then((result) => result[0]);
     });
 }
 // insert 전에 동일 code 체크
@@ -105,7 +106,7 @@ function checkCode(codeInfo) {
 function insertCode(codeInfo) {
     return __awaiter(this, void 0, void 0, function* () {
         const { code_cd, code_nm, up_code_cd, sort, } = codeInfo;
-        const query = "insert into codes (code_cd, code_nm, up_code_cd, sort, insert_id, insert_date) values (?, ?, ?, ?, ?, NOW())";
+        const query = "insert into codes (code_cd, code_nm, up_code_cd, sort,  insert_date) values (?, ?, ?, ?, NOW())";
         return database_1.db
             .execute(query, [
             code_cd,

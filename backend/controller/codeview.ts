@@ -185,22 +185,25 @@ export async function insertCode(req: Request, res: Response) {
 
 
 export async function updateCode(req: Request, res: Response) {
-  const saveInfo: PostCode = req.body;
-  
-  let saveId;
-  let userCnt;
+  const saveInfos: PostCode[] = req.body; // 여러 행을 배열로 받음
+  let saveIds: any[] = [];
+ 
   try {
 
-    saveId = await codeViewData.updateCode(saveInfo);
+    for (const saveInfo of saveInfos) {
+      const saveId = await codeViewData.updateCode(saveInfo);
+      saveIds.push(saveId);
 
-    // 정상적으로 saveId를 얻으면 클라이언트에 응답
-    return res.status(201).json({ saveId });
+    }
+    // 모든 데이터를 성공적으로 저장한 후 응답
+    res.status(201).json({ success: true, saveIds });
 
   } catch (error) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    return res.status(500).json({ message: "Failed to save user data" });
+    res.status(500).json({ success: false, message: "Failed to update query" });
+
   }
 
 }
