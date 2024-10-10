@@ -33,6 +33,7 @@ export const navData = [
     path: '/temp',
     icon: icon('ic-cart'),
   },
+  /*
   {
     title: 'Templates2',
     path: '/temp',
@@ -53,6 +54,7 @@ export const navData = [
     path: '/temp',
     icon: icon('ic-cart'),
   },
+  */
   {
     title: 'Product(상품)',
     path: '/products',

@@ -1,12 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { MenuItem, Select } from '@mui/material';
-import { DataGrid, GridRowsProp, GridColDef, GridRowModel, GridRowSelectionModel, GridRenderEditCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRowSelectionModel, GridRenderEditCellParams } from '@mui/x-data-grid';
 import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { saveRows, searchRows } from 'src/sections/comm/DatabaseApi';
 import AlertSnackbar from 'src/sections/comm/AlertSnackbar';
-import { updateStatus,deleteStatus } from 'src/sections/comm/utils';
+import { updateStatus } from 'src/sections/comm/utils';
 import 'src/theme/styles/titleBox.css'
 
 import CmmDataGrid from '../../comm/CmmDataGrid';
@@ -43,41 +43,27 @@ export function CodeView() {
 
   // GridColDef 배열에 맞는 columns 정의
   const upCodeColumns: GridColDef[] = [
+    {
+      field: 'code_cd',
+      headerName: '공통코드',
+      editable: true,
+      renderEditCell: (params) => <EditSelectCell {...params} />,
+      width: 150,
+    },
     { field: 'up_code_cd', headerName: '상위코드', width: 70 , editable: true, flex:0.5, headerAlign: 'center'},
     { field: 'up_code_nm', headerName: '상위코드명', width: 150, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'sort', headerName: '정렬순서', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center' },
   ];
 
-  // GridColDef 배열에 맞는 columns 정의
-  const columns: GridColDef[] = [
-    {
-      field: 'up_code_cd',
-      headerName: '상위코드',
-      editable: true,
-      renderEditCell: (params) => <EditSelectCell {...params} />,
-      width: 150,
-    },
-    { field: 'up_code_nm', headerName: '상위코드명', width: 150 , editable: true, flex:0.5, headerAlign: 'center'},
-    { field: 'code_cd', headerName: '코드', width: 70 , editable: true, flex:0.5, headerAlign: 'center'},
-    { field: 'code_nm', headerName: '코드명', width: 150, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'sort', headerName: '정렬순서', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center' },
-  ];
-
   const [rows, setRows] = useState<RowData[]>([]);
   const [upCodeRows, setUpCodeRows] = useState<RowUpCodeData[]>([]);
-  const [upCodeSearchUrl] = useState('/api/code/upCodeSearch');
-  // const [upCodeSaveUrl] = useState('/api/code/upCodeSave');
-  const [upCodeInsertUrl] = useState('/api/code/upCodeInsert');
-  const [upCodeUpdateUrl] = useState('/api/code/upCodeUpdate');
-  const [upCodeDeleteUrl] = useState('/api/code/upCodeDelete');
-  const [searchUrl] = useState('/api/code/search');
-  const [insertUrl] = useState('/api/code/insert');
-  const [updateUrl] = useState('/api/code/update');
-  const [deleteUrl] = useState('/api/code/delete');
+  const [upCodeSearchUrl] = useState('/api/temp/search');
+  const [upCodeInsertUrl] = useState('/api/temp/insert');
+  const [upCodeUpdateUrl] = useState('/api/temp/update');
+  const [upCodeDeleteUrl] = useState('/api/temp/delete');
   const [selectedRowsId, setSelectedRowsId] = useState<string[]>([]);
   const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
   const [commCodeSearchUrl] = useState('/api/code/commCodeSearch');
-  
   
   useEffect(() => {
    
@@ -113,20 +99,6 @@ export function CodeView() {
     );
   };
   
-
-  // 행 추가 함수 정의
-  const handleUpCodeAddRow = () => {
-    const newRow: RowUpCodeData = {
-      row_id:(upCodeRows.length + 1).toString(),
-      up_code_cd: '',
-      up_code_nm: '',
-      sort: upCodeRows.length + 1,
-      status: 'insert',
-    };
-    setUpCodeRows((prevRows) => [...prevRows, newRow]);
-  };
-
-
   // 행 추가 함수 정의
   const handleAddRow = () => {
 
@@ -148,7 +120,7 @@ export function CodeView() {
   };
 
   
-  const handleUpCodeSearchRow = async (e: React.FormEvent) => {
+  const handleSearchRow = async (e: React.FormEvent) => {
     e.preventDefault();
       const result = await searchRows(rows, upCodeSearchUrl);
       
@@ -163,25 +135,10 @@ export function CodeView() {
     // 선택된 행의 데이터를 설정
     console.log("params.row  ::",params.row);
     setSelectedRowData(params.row);
-    handleSearchRow(params.row); // 업데이트된 row 데이터를 바로 search 함수에 전달
   };
   
-
-  const handleSearchRow = useCallback(async (rowData : RowUpCodeData) => {
-    console.log("==== handleSearchRow ====", rowData);
-    if (!rowData) return;
-    
-    const result = await searchRows([rowData], searchUrl);
-    console.log("rowData  ::", rowData);
-    if (result.message) {
-      // 서버의 경고 메시지 처리
-      showAlert(result.message, 'warning');
-    }
-    setRows(result);
-  }, [searchUrl]);
-
   
-  const handleUpCodeSaveRow = async (e: React.FormEvent) => {
+  const handleSaveRow = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // 필수값 체크
@@ -198,31 +155,13 @@ export function CodeView() {
     }
   };
 
-
-  const handleSaveRow = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // 필수값 체크
-    if (!validateForm()) {
-      return; // 필수값 체크에 실패하면 함수 종료
-    }
-
-    const result = await saveRows(rows, insertUrl, updateUrl, deleteUrl);
-    
-    if (result.success) {
-      // 상태값 갱신
-      setRows((prevRows) => updateStatus(prevRows));
-      showAlert(result.message, 'info');
-    }
-  };
-
   // DataGrid에서 선택 모델이 변경될 때 호출되는 함수
   const handleSelectionChange = (selectionIds: GridRowSelectionModel) => {
     console.log("parent selectionIds ::",selectionIds);
     setSelectedRowsId(selectionIds.map(String));
   };
 
-  const handleUpcodeDelRow = async (e: React.FormEvent) => {
+  const handleDelRow = async (e: React.FormEvent) => {
     console.log("parent selectedRows :: ", selectedRowsId);
 
     setUpCodeRows((prevRows) =>
@@ -236,12 +175,6 @@ export function CodeView() {
         })
     );
   };
-
-
-  const handleDelRow = async (e: React.FormEvent) => {
-
-  };
-
 
   const validateForm = () => {
 
@@ -271,10 +204,8 @@ export function CodeView() {
       if (invalidFields[0].up_code_cd) {
         showAlert('상위코드는 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
-
       return false; // 유효하지 않음을 반환
     }
-
      return true;
   };
 
@@ -299,13 +230,13 @@ export function CodeView() {
 
     <DashboardContent>
       
-      <CmmMenuTitle title='Code'/>
+      <CmmMenuTitle title='Temp'/>
 
       <Box className="titleBox">
-        <CmmBtn text='추가' onClick={handleUpCodeAddRow}/>
-        <CmmBtn text='삭제' onClick={handleUpcodeDelRow}/>
-        <CmmBtn text='저장' onClick={handleUpCodeSaveRow}/>
-        <CmmBtn text='조회' onClick={handleUpCodeSearchRow}/>
+        <CmmBtn text='추가' onClick={handleAddRow}/>
+        <CmmBtn text='삭제' onClick={handleDelRow}/>
+        <CmmBtn text='저장' onClick={handleSaveRow}/>
+        <CmmBtn text='조회' onClick={handleSearchRow}/>
       </Box>
 
       
@@ -318,22 +249,6 @@ export function CodeView() {
                     // onCellClick={handleCellClick}
                     onRowClick={handleRowClick}
                     editMode='cell'   // cell로 설정해야 onCellEditStart, onCellEditStop 이벤트가 발생한다.
-                    status
-                    />
-
-      <Box className="titleBox">
-        <CmmBtn text='추가' onClick={handleAddRow}/>
-        <CmmBtn text='삭제' onClick={handleAddRow}/>
-        <CmmBtn text='저장' onClick={handleSaveRow}/>
-        {/*
-        <CmmBtn text='조회' onClick={handleSearchRow}/>
-        */}
-      </Box>
-
-      <CmmDataGrid rows={rows}
-                    setRows={setRows}
-                    columns={columns}
-                    getRowId={(row) => row.row_id}
                     status
                     />
 
