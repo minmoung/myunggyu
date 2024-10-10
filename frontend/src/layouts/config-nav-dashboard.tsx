@@ -29,6 +29,31 @@ export const navData = [
     icon: icon('ic-cart'),
   },
   {
+    title: 'Templates1',
+    path: '/temp',
+    icon: icon('ic-cart'),
+  },
+  {
+    title: 'Templates2',
+    path: '/temp',
+    icon: icon('ic-cart'),
+  },
+  {
+    title: 'Templates3',
+    path: '/temp',
+    icon: icon('ic-cart'),
+  },
+  {
+    title: 'Templates4',
+    path: '/temp',
+    icon: icon('ic-cart'),
+  },
+  {
+    title: 'Templates5',
+    path: '/temp',
+    icon: icon('ic-cart'),
+  },
+  {
     title: 'Product(상품)',
     path: '/products',
     icon: icon('ic-cart'),

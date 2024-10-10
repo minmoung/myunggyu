@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid, GridRowsProp, GridColDef, GridRowModel, GridRowSelectionModel } from '@mui/x-data-grid';
+import { MenuItem, Select } from '@mui/material';
+import { DataGrid, GridRowsProp, GridColDef, GridRowModel, GridRowSelectionModel, GridRenderEditCellParams } from '@mui/x-data-grid';
 import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { saveRows, searchRows } from 'src/sections/comm/DatabaseApi';
@@ -11,8 +12,6 @@ import 'src/theme/styles/titleBox.css'
 import CmmDataGrid from '../../comm/CmmDataGrid';
 import CmmBtn from '../../comm/CmmBtn';
 import CmmMenuTitle from '../../comm/CmmMenuTitle';
-
-
 
 
 interface RowUpCodeData {
@@ -32,6 +31,12 @@ interface RowData {
   status: 'insert' | 'update' | 'delete' | 'none';
 }
 
+// 상위코드 타입 정의
+interface CommCode {
+  code_cd: string;
+  code_nm: string;
+}
+
 // ----------------------------------------------------------------------
 
 export function CodeView() {
@@ -41,16 +46,21 @@ export function CodeView() {
     { field: 'up_code_cd', headerName: '상위코드', width: 70 , editable: true, flex:0.5, headerAlign: 'center'},
     { field: 'up_code_nm', headerName: '상위코드명', width: 150, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'sort', headerName: '정렬순서', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center' },
-    // 추가적인 필드 정의
   ];
 
   // GridColDef 배열에 맞는 columns 정의
   const columns: GridColDef[] = [
-    { field: 'up_code_cd', headerName: '상위코드', width: 70 , editable: true, flex:0.5, headerAlign: 'center'},
+    {
+      field: 'up_code_cd',
+      headerName: '상위코드',
+      editable: true,
+      renderEditCell: (params) => <EditSelectCell {...params} />,
+      width: 150,
+    },
+    { field: 'up_code_nm', headerName: '상위코드명', width: 150 , editable: true, flex:0.5, headerAlign: 'center'},
     { field: 'code_cd', headerName: '코드', width: 70 , editable: true, flex:0.5, headerAlign: 'center'},
     { field: 'code_nm', headerName: '코드명', width: 150, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'sort', headerName: '정렬순서', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center' },
-    // 추가적인 필드 정의
   ];
 
   const [rows, setRows] = useState<RowData[]>([]);
@@ -66,10 +76,43 @@ export function CodeView() {
   const [deleteUrl] = useState('/api/code/delete');
   const [selectedRowsId, setSelectedRowsId] = useState<string[]>([]);
   const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
+  const [commCodeSearchUrl] = useState('/api/code/commCodeSearch');
+  
   
   useEffect(() => {
    
   },[]);
+
+  // 공통코드 가져오기
+  const EditSelectCell = (params: GridRenderEditCellParams) => {
+    const [commCode, setCommCode] = useState<CommCode[]>([]);
+    const { value, api, id, field } = params;
+
+    useEffect(() => {
+      const fetchUpCodes = async () => {
+        console.log("==== commcode ====");
+        try {
+          const response = await searchRows(rows, commCodeSearchUrl);
+          setCommCode(response.data);
+        } catch (error) {
+          console.error('Error fetching up codes:', error);
+        }
+      };
+
+      fetchUpCodes();
+    }, []);
+
+    return (
+      <Select value={value || ''} onChange={(event) => api.setEditCellValue({ id, field, value: event.target.value })}>
+        {(commCode ?? []).map((option) => (
+          <MenuItem key={option.code_cd} value={option.code_cd}>
+            {option.code_nm}
+          </MenuItem>
+        ))}
+      </Select>
+    );
+  };
+  
 
   // 행 추가 함수 정의
   const handleUpCodeAddRow = () => {

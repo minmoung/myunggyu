@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DataGrid, GridCellEditStartParams, GridCellEditStopParams, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { DataGrid, GridCellEditStartParams, GridCellEditStopParams, GridColDef, GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
 import { v4 as uuidv4 } from 'uuid';
 
 interface CmmDataGridProps<T> {
@@ -20,6 +20,7 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
   const rowsWithStatus: RowWithStatus[] = rows as RowWithStatus[];
   const [editingCell, setEditingCell] = useState<{ id: string | number; field: string } | null>(null);
   const getRowIdWithFallback = (row: T) => getRowId ? getRowId(row) : uuidv4();
+  const apiRef = useGridApiRef(); 
 
   useEffect(() => {
     console.log("========= useEffect =========");
@@ -27,7 +28,7 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
       let isUpdated = false;
       const updatedRows = prevRows.map((row) => {
         if (!(row as RowWithStatus).id) {
-          console.log("row ::" , row);
+          // console.log("row ::" , row);
           isUpdated = true;
           return { ...row, id: uuidv4() };
         }
@@ -127,7 +128,7 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
 
           return <span style={{ color }}>{displayText}</span>;
         },
-        width: 150,
+        width: 60,
       },
       ...columns,
     ]
@@ -142,26 +143,15 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
 
   // 클릭 시 편집 모드로 진입
   const handleCellClick = (params: any) => {
-    // console.log("===== handleCellClick params =====",params);
-    // const { id, field } = params;
-    // console.log("===== handleCellClick field =====",field);
-    // if (field === 'up_code_nm' || field === 'sort') { // 편집할 수 있는 필드
-    //   const rowData = rows.find(row => getRowId(row) === id);
-    //   console.log("===== handleCellClick id =====",id);
-    //   console.log("===== handleCellClick rowData =====",rowData);
-    //   setEditingCell({ id, field });
-    //   if (rowData) {
-    //     // 클릭한 셀의 편집 모드 시작
-    //     // params.api.startRowEditMode(params.id); // rowId로 수정
-        
-    //   }
-    // }
-
+    
     // onCellClick(params);
     // 부모에 onCellClick 이벤트 전달
     if (onCellClick) {
       onCellClick(params);
     }
+
+    // 클릭한 셀을 편집 모드로 전환
+    apiRef.current.startCellEditMode({ id: params.id, field: params.field });
   };
 
   const handleRowSelectionModelChange = (newSelection: any) => {
@@ -178,6 +168,7 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
         // rows={rows as (T & { id: string })[]} // rows를 id가 있는 형태로 타입 캐스팅
         columns={extendedColumns}
         editMode={editMode} // 행 편집 모드 설정
+        apiRef={apiRef}  // apiRef 추가
         processRowUpdate={processRowUpdate} // 업데이트 처리 함수
         autoHeight
         // 추가적으로, 각 행의 모델이 올바른 타입인지 확인
