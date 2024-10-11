@@ -14,20 +14,15 @@ import CmmBtn from '../../comm/CmmBtn';
 import CmmMenuTitle from '../../comm/CmmMenuTitle';
 
 
-interface RowUpCodeData {
-  row_id: string;
-  up_code_cd: string;
-  up_code_nm: string;
-  sort: number;
-  status: 'insert' | 'update' | 'delete' | 'none';
-}
-
 interface RowData { 
   row_id: string;
-  code_cd: string;
-  code_nm: string;
-  up_code_cd: string;
-  sort: number;
+  col1: string;
+  col2: string;
+  col3: string;
+  col4: string;
+  col5: string;
+  col6: string;
+  col7: string;
   status: 'insert' | 'update' | 'delete' | 'none';
 }
 
@@ -50,19 +45,23 @@ export function CodeView() {
       renderEditCell: (params) => <EditSelectCell {...params} />,
       width: 150,
     },
-    { field: 'up_code_cd', headerName: '상위코드', width: 70 , editable: true, flex:0.5, headerAlign: 'center'},
-    { field: 'up_code_nm', headerName: '상위코드명', width: 150, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'sort', headerName: '정렬순서', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center' },
+    { field: 'col1', headerName: 'COL1', width: 100, editable: true, flex:0.5, headerAlign: 'center'},
+    { field: 'col2', headerName: 'COL2', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col3', headerName: 'COL3', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col4', headerName: 'COL4', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col5', headerName: 'COL5', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col6', headerName: 'COL6', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col7', headerName: 'COL7', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center'},
   ];
 
   const [rows, setRows] = useState<RowData[]>([]);
-  const [upCodeRows, setUpCodeRows] = useState<RowUpCodeData[]>([]);
-  const [upCodeSearchUrl] = useState('/api/temp/search');
-  const [upCodeInsertUrl] = useState('/api/temp/insert');
-  const [upCodeUpdateUrl] = useState('/api/temp/update');
-  const [upCodeDeleteUrl] = useState('/api/temp/delete');
+  // const [upCodeRows, setUpCodeRows] = useState<RowUpCodeData[]>([]);
+  const [searchUrl] = useState('/api/temp/search');
+  const [insertUrl] = useState('/api/temp/insert');
+  const [updateUrl] = useState('/api/temp/update');
+  const [deleteUrl] = useState('/api/temp/delete');
   const [selectedRowsId, setSelectedRowsId] = useState<string[]>([]);
-  const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
+  // const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
   const [commCodeSearchUrl] = useState('/api/code/commCodeSearch');
   
   useEffect(() => {
@@ -75,7 +74,7 @@ export function CodeView() {
     const { value, api, id, field } = params;
 
     useEffect(() => {
-      const fetchUpCodes = async () => {
+      const fetchCodes = async () => {
         console.log("==== commcode ====");
         try {
           const response = await searchRows(rows, commCodeSearchUrl);
@@ -85,7 +84,7 @@ export function CodeView() {
         }
       };
 
-      fetchUpCodes();
+      fetchCodes();
     }, []);
 
     return (
@@ -102,39 +101,36 @@ export function CodeView() {
   // 행 추가 함수 정의
   const handleAddRow = () => {
 
-    if (selectedRowData) {
-      const newRow: RowData = {
-        // code_cd: (rows.length + 1).toString(),
-        row_id: (rows.length + 1).toString(),
-        code_cd: '',
-        code_nm: '',
-        up_code_cd: selectedRowData.up_code_cd,
-        sort: rows.length + 1,
-        status: 'insert',
-      };
-      setRows((prevRows) => [...prevRows, newRow]);
-    }else{
-
-      showAlert('먼저 상위 코드를 선택하세요.', 'warning');
-    }
+    const newRow: RowData = {
+      row_id: (rows.length + 1).toString(),
+      col1: '',
+      col2: '',
+      col3: '',
+      col4: '',
+      col5: '',
+      col6: '',
+      col7: (rows.length + 1).toString(),
+      status: 'insert',
+    };
+    setRows((prevRows) => [...prevRows, newRow]);
   };
 
   
   const handleSearchRow = async (e: React.FormEvent) => {
     e.preventDefault();
-      const result = await searchRows(rows, upCodeSearchUrl);
+      const result = await searchRows(rows, searchUrl);
       
       if (result.message) {
         // 서버의 경고 메시지 처리
         showAlert(result.message, 'warning');
       }
-      setUpCodeRows(result);
+      setRows(result);
   };
 
   const handleRowClick = (params : any) => {
     // 선택된 행의 데이터를 설정
-    console.log("params.row  ::",params.row);
-    setSelectedRowData(params.row);
+    console.log("선택한 Row의 Value  ::",params.row);
+    
   };
   
   
@@ -146,29 +142,29 @@ export function CodeView() {
       return; // 필수값 체크에 실패하면 함수 종료
     }
     
-    const result = await saveRows(upCodeRows, upCodeInsertUrl, upCodeUpdateUrl, upCodeDeleteUrl);
+    const result = await saveRows(rows, insertUrl, updateUrl, deleteUrl);
     
     if (result.success) {
       // 상태값 갱신
-      setUpCodeRows((prevRows) => updateStatus(prevRows));
+      setRows((prevRows) => updateStatus(prevRows));
       showAlert(result.message, 'info');
     }
   };
 
   // DataGrid에서 선택 모델이 변경될 때 호출되는 함수
   const handleSelectionChange = (selectionIds: GridRowSelectionModel) => {
-    console.log("parent selectionIds ::",selectionIds);
+    console.log("선택한 Row의 row_id ::",selectionIds);
     setSelectedRowsId(selectionIds.map(String));
   };
 
   const handleDelRow = async (e: React.FormEvent) => {
     console.log("parent selectedRows :: ", selectedRowsId);
 
-    setUpCodeRows((prevRows) =>
+    setRows((prevRows) =>
       prevRows.map((row) => {
-        console.log('row_id : ', row.up_code_cd);
+        console.log('row_id : ', row.col1);
         console.log('selectedRows : ', selectedRowsId);
-        // console.log('row_id as string:', row.row_id.toString()); // 문자열로 변환된 row_id 값
+        
         return selectedRowsId.includes(row.row_id.toString())
           ? { ...row, status: 'delete' }
           : row
@@ -179,9 +175,9 @@ export function CodeView() {
   const validateForm = () => {
 
     const validateErrorsArray = rows.map((row) => ({
-        code_cd: row.code_cd === '', // code_cd가 비어 있으면 true
-        code_nm: row.code_nm === '', // code_nm이 비어 있으면 true
-        up_code_cd: row.up_code_cd === '', // up_code_cd가 비어 있으면 true
+        col1: row.col1 === '', // code_cd가 비어 있으면 true
+        col2: row.col2 === '', // code_nm이 비어 있으면 true
+        col3: row.col3 === '', // up_code_cd가 비어 있으면 true
     }));
 
     
@@ -193,16 +189,16 @@ export function CodeView() {
     if (invalidFields.length > 0) {
       console.log("invalidFields :: ", invalidFields);
 
-      if (invalidFields[0].code_cd) {
-        showAlert('코드는 필수 항목입니다', 'warning');  // 경고 메시지 출력
+      if (invalidFields[0].col1) {
+        showAlert('col1은 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
 
-      if (invalidFields[0].code_nm) {
-        showAlert('코드명은 필수 항목입니다', 'warning');  // 경고 메시지 출력
+      if (invalidFields[0].col2) {
+        showAlert('col2은은 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
 
-      if (invalidFields[0].up_code_cd) {
-        showAlert('상위코드는 필수 항목입니다', 'warning');  // 경고 메시지 출력
+      if (invalidFields[0].col3) {
+        showAlert('col3은는 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
       return false; // 유효하지 않음을 반환
     }
@@ -230,7 +226,7 @@ export function CodeView() {
 
     <DashboardContent>
       
-      <CmmMenuTitle title='Temp'/>
+      <CmmMenuTitle title='Temp1'/>
 
       <Box className="titleBox">
         <CmmBtn text='추가' onClick={handleAddRow}/>
@@ -240,8 +236,8 @@ export function CodeView() {
       </Box>
 
       
-      <CmmDataGrid rows={upCodeRows}
-                    setRows={setUpCodeRows}
+      <CmmDataGrid rows={rows}
+                    setRows={setRows}
                     columns={upCodeColumns}
                     // getRowId={(row) => upCodeRows.length}
                     getRowId={(row) => row.row_id}

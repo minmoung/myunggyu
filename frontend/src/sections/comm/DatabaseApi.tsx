@@ -26,7 +26,6 @@ export const saveRows = async (rows: any[], insertUrl:String, updateUrl:String, 
       console.log("Insert result: ", insertResult);
       console.log("insertResult.success: ", insertResult.success);
       
-
       if (!insertResult.success) {
         return { success: false, message: '데이터 저장 중 오류가 발생했습니다.', msg: insertResult.message };
       }
@@ -97,7 +96,7 @@ export const searchRows = async (rows: any[] | null, searchUrl:String) => {
   } catch (error) {
     console.error('Error:', error);
     // throw error; // 에러를 다시 던져서 호출하는 컴포넌트에서 처리하도록 함
-    return { success: false, message: '데이터 조회 중 오류가 발생했습니다. 22222', msg: error.toString()};
+    return { success: false, message: '데이터 조회 중 오류가 발생했습니다.', msg: error.toString()};
   }
 };
 
