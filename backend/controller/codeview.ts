@@ -9,47 +9,6 @@ export async function searchUpCode(req: Request, res: Response) {
 }
 
 
-export async function saveUpCode( req: Request, res: Response) {
-  const saveInfos: PostUpCode[] = req.body; // 여러 행을 배열로 받음
-  let saveIds: any[] = [];
-  try {
-    for (const saveInfo of saveInfos) {
-      console.log("===== selectCnt =====");
-      console.log("saveInfo  ::" , saveInfo);
-      // if(saveInfo.status)
-      // const userCnt = await codeViewData.checkUpCode(saveInfo);
-      // console.log("userCnt :", userCnt);
-
-      // if (userCnt[0].cnt < 1) {
-      //   const saveId = await codeViewData.insertUpCode(saveInfo);
-      //   saveIds.push(saveId);
-      // } else {
-      //   return res
-      //     .status(201)
-      //     .json({
-      //       message:
-      //         "중복된 코드가 존재합니다.\n(" +
-      //         saveInfo.up_code_cd +
-      //         " : " +
-      //         saveInfo.up_code_nm +
-      //         ")",
-      //     });
-      // }
-    }
-
-    // 모든 데이터를 성공적으로 저장한 후 응답
-    res.status(201).json({ saveIds });
-
-  } catch (error) {
-    console.error("Error during user save operation:", error);
-
-    // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ message: "Failed to save user data" });
-  }
-
-}
-
-
 export async function insertUpCode(req: Request, res: Response) {
   const saveInfos: PostUpCode[] = req.body; // 여러 행을 배열로 받음
   let saveIds: any[] = [];

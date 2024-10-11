@@ -33,7 +33,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchUpCode = searchUpCode;
-exports.saveUpCode = saveUpCode;
 exports.insertUpCode = insertUpCode;
 exports.updateUpCode = updateUpCode;
 exports.deleteUpCode = deleteUpCode;
@@ -47,43 +46,6 @@ function searchUpCode(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const searchInfo = yield codeViewData.searchUpCode();
         res.send(searchInfo);
-    });
-}
-function saveUpCode(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const saveInfos = req.body; // 여러 행을 배열로 받음
-        let saveIds = [];
-        try {
-            for (const saveInfo of saveInfos) {
-                console.log("===== selectCnt =====");
-                console.log("saveInfo  ::", saveInfo);
-                // if(saveInfo.status)
-                // const userCnt = await codeViewData.checkUpCode(saveInfo);
-                // console.log("userCnt :", userCnt);
-                // if (userCnt[0].cnt < 1) {
-                //   const saveId = await codeViewData.insertUpCode(saveInfo);
-                //   saveIds.push(saveId);
-                // } else {
-                //   return res
-                //     .status(201)
-                //     .json({
-                //       message:
-                //         "중복된 코드가 존재합니다.\n(" +
-                //         saveInfo.up_code_cd +
-                //         " : " +
-                //         saveInfo.up_code_nm +
-                //         ")",
-                //     });
-                // }
-            }
-            // 모든 데이터를 성공적으로 저장한 후 응답
-            res.status(201).json({ saveIds });
-        }
-        catch (error) {
-            console.error("Error during user save operation:", error);
-            // 오류 발생 시 응답을 보낸 후 함수 종료
-            res.status(500).json({ message: "Failed to save user data" });
-        }
     });
 }
 function insertUpCode(req, res) {
@@ -203,18 +165,20 @@ function insertCode(req, res) {
 }
 function updateCode(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const saveInfo = req.body;
-        let saveId;
-        let userCnt;
+        const saveInfos = req.body; // 여러 행을 배열로 받음
+        let saveIds = [];
         try {
-            saveId = yield codeViewData.updateCode(saveInfo);
-            // 정상적으로 saveId를 얻으면 클라이언트에 응답
-            return res.status(201).json({ saveId });
+            for (const saveInfo of saveInfos) {
+                const saveId = yield codeViewData.updateCode(saveInfo);
+                saveIds.push(saveId);
+            }
+            // 모든 데이터를 성공적으로 저장한 후 응답
+            res.status(201).json({ success: true, saveIds });
         }
         catch (error) {
             console.error("Error during user save operation:", error);
             // 오류 발생 시 응답을 보낸 후 함수 종료
-            return res.status(500).json({ message: "Failed to save user data" });
+            res.status(500).json({ success: false, message: "Failed to update query" });
         }
     });
 }

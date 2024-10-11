@@ -13,7 +13,8 @@ const pool = mysql.createPool(
   port: 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  debug: process.env.DB_DEBUG === 'true'
 });
 
 export const db = pool;

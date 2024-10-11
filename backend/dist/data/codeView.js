@@ -71,8 +71,8 @@ function updateUpCode(codeInfo) {
         }
         catch (error) {
             // 오류 처리
-            console.error("Error updating user:", error);
-            throw new Error("Failed to update user");
+            console.error("Error updating query:", error);
+            throw new Error("Failed to update query");
         }
     });
 }
@@ -121,10 +121,9 @@ function updateCode(codeInfo) {
     return __awaiter(this, void 0, void 0, function* () {
         const { code_cd, code_nm, up_code_cd, sort, update_id, } = codeInfo;
         const query = `
-    update users set
-      up_code_cd = ?
+    update codes set
+      code_nm = ?
       ,sort = ?
-      ,update_id = ?
       ,update_date = NOW()
     where up_code_cd = ?
       and code_cd = ?
@@ -132,19 +131,18 @@ function updateCode(codeInfo) {
         try {
             // 데이터베이스 쿼리 실행
             const [result] = yield database_1.db.execute(query, [
-                code_cd,
                 code_nm,
-                up_code_cd,
                 sort,
-                update_id,
+                up_code_cd,
+                code_cd,
             ]);
             // 업데이트된 행의 수를 반환
             return result.affectedRows;
         }
         catch (error) {
             // 오류 처리
-            console.error("Error updating user:", error);
-            throw new Error("Failed to update user");
+            console.error("Error updating query:", error);
+            throw new Error("Failed to update query");
         }
     });
 }

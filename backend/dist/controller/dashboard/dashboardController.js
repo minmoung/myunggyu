@@ -37,7 +37,13 @@ const dashboardData = __importStar(require("../../data/dashboard/dashboardData")
 // 모든 admin user 들을 배열로 전송하도록 설계
 function searchTopMenu(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const searchInfo = yield dashboardData.searchTopMenu();
-        res.send(searchInfo);
+        try {
+            const searchInfo = yield dashboardData.searchTopMenu();
+            res.send(searchInfo);
+        }
+        catch (error) {
+            console.error("Error occurred:", error);
+            res.status(500).json({ success: false, message: '서버에서 오류가 발생했습니다.' });
+        }
     });
 }
