@@ -90,7 +90,6 @@ export async function deleteUpCode(req: Request, res: Response) {
 // 모든 코드를 배열로 전송하도록 설계
 export async function searchCode(req: Request, res: Response) {
   const searchInfo : GetUpCode[] = req.body;
-  console.log("searchInfo   ::" , searchInfo[0]);
   const searchResult: Array<GetCode> = await codeViewData.searchCode(searchInfo);
   res.send(searchResult);
 }
@@ -173,5 +172,14 @@ export async function deleteCode(req: Request, res: Response) {
   const deleteInfo: PostCode = req.body;
   const deleteId = await codeViewData.deleteCode(deleteInfo);
   res.status(201).json({ deleteId: deleteId });
+}
+
+
+
+// 모든 코드를 배열로 전송하도록 설계
+export async function searchCmmCode(req: Request, res: Response) {
+  const searchInfo : GetUpCode[] = req.body;
+  const searchResult: Array<GetCode> = await codeViewData.searchCmmCode(searchInfo);
+  res.send(searchResult);
 }
 

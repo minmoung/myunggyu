@@ -86,10 +86,14 @@ export async function deleteUpCode(codeInfo: PostUpCode): Promise<string> {
 
 
 export async function searchCode(searchInfo : GetUpCode[]): Promise<Array<GetCode>> {
+  console.log("searchInfo  ::", searchInfo);
   const [{ up_code_cd }] = searchInfo; // 배열에서 첫 번째 객체 추출
-  console.log("up_code_cd  ::", up_code_cd);
+  
   const query: string =
     "select row_number() over (order by a.code_cd desc) as row_id, a.code_cd, a.code_nm, a.up_code_cd, a.sort from codes a where a.up_code_cd = ?";
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
+  // console.log('With Parameters:', codeInfo);
   return db.execute(query, [up_code_cd,]).then((result: any) => result[0]);
 }
 
@@ -173,4 +177,17 @@ export async function deleteCode(codeInfo: PostCode): Promise<string> {
       code_cd
     ])
     .then((result: any) => result[0].insertId);
+}
+
+
+export async function searchCmmCode(searchInfo : GetUpCode[]): Promise<Array<GetCode>> {
+  console.log("searchInfo  ::", searchInfo);
+  const [{ up_code_cd }] = searchInfo; // 배열에서 첫 번째 객체 추출
+  
+  const query: string =
+    "select row_number() over (order by a.code_cd desc) as row_id, a.code_cd, a.code_nm, a.up_code_cd, a.sort from codes a where a.up_code_cd = ?";
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
+  // console.log('With Parameters:', codeInfo);
+  return db.execute(query, [up_code_cd,]).then((result: any) => result[0]);
 }
