@@ -62,7 +62,7 @@ export function CodeView() {
   const [deleteUrl] = useState('/api/temp/delete');
   const [selectedRowsId, setSelectedRowsId] = useState<string[]>([]);
   // const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
-  const [commCodeSearchUrl] = useState('/api/code/commCodeSearch');
+  const [commCodeSearchUrl] = useState('/api/code/codeSearch/001');
   
   useEffect(() => {
    
@@ -78,6 +78,7 @@ export function CodeView() {
         console.log("==== commcode ====");
         try {
           const response = await searchRows(rows, commCodeSearchUrl);
+          console.log("response.data  :: " , response.data);
           setCommCode(response.data);
         } catch (error) {
           console.error('Error fetching up codes:', error);
