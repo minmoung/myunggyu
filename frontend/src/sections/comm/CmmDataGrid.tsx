@@ -151,7 +151,12 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
     }
 
     // 클릭한 셀을 편집 모드로 전환
-    apiRef.current.startCellEditMode({ id: params.id, field: params.field });
+    console.log("params.isEditable  ::", params.isEditable);
+    const isCellInEditMode = apiRef.current.getCellMode(params.id, params.field) === 'edit';
+    
+    if (params.isEditable && !isCellInEditMode) {
+      apiRef.current.startCellEditMode({ id: params.id, field: params.field });
+    }
   };
 
   const handleRowSelectionModelChange = (newSelection: any) => {
