@@ -1,18 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
 import { MenuItem, Select } from '@mui/material';
-import { GridColDef, GridRowSelectionModel, GridRenderEditCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRowSelectionModel, GridRenderCellParams } from '@mui/x-data-grid';
 import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { saveRows, searchRows } from 'src/sections/comm/DatabaseApi';
 import AlertSnackbar from 'src/sections/comm/AlertSnackbar';
 import { updateStatus } from 'src/sections/comm/utils';
+import GridEditSelectCell from 'src/sections/comm/GridEditSelectCell';
 import 'src/theme/styles/titleBox.css'
 
 import CmmDataGrid from '../../comm/CmmDataGrid';
 import CmmBtn from '../../comm/CmmBtn';
 import CmmMenuTitle from '../../comm/CmmMenuTitle';
 
+// import { DataGridPremium } from '@mui/x-data-grid-premium';
 
 interface RowData { 
   row_id: string;
@@ -39,18 +41,32 @@ export function CodeView() {
   // GridColDef 배열에 맞는 columns 정의
   const upCodeColumns: GridColDef[] = [
     {
-      field: 'code_cd',
+      field: 'col6',
       headerName: '공통코드',
       editable: true,
-      renderEditCell: (params) => <EditSelectCell {...params} />,
       width: 150,
+      renderEditCell: (params) => <GridEditSelectCell {...params} />,
+      valueFormatter: (params : GridRenderCellParams) => {
+        // commCode 배열에서 현재 셀의 code_cd에 해당하는 code_nm을 찾아 반환
+        const selectedCode = commCode.find(code => code.code_cd === params.value);
+        console.log("selectedCode :: " , selectedCode);
+        console.log("params.value :: " , params.value);
+        return selectedCode ? selectedCode.code_nm : params.value; // 해당 코드가 없으면 원래 값을 반환
+      },
+      /*
+      valueFormatter: (params:GridValueFormatter) => {
+        // commCode 배열에서 현재 셀의 code_cd에 해당하는 code_nm을 찾아 반환
+        const selectedCode = commCode.find(code => code.code_cd === params.value);
+        return selectedCode ? selectedCode.code_nm : params.value;
+      }
+      */
     },
     { field: 'col1', headerName: 'COL1', width: 100, editable: true, flex:0.5, headerAlign: 'center'},
     { field: 'col2', headerName: 'COL2', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'col3', headerName: 'COL3', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'col4', headerName: 'COL4', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'col5', headerName: 'COL5', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col6', headerName: 'COL6', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    // { field: 'col6', headerName: 'COL6', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
     { field: 'col7', headerName: 'COL7', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center'},
   ];
 
@@ -62,42 +78,12 @@ export function CodeView() {
   const [deleteUrl] = useState('/api/temp/delete');
   const [selectedRowsId, setSelectedRowsId] = useState<string[]>([]);
   // const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
-  const [commCodeSearchUrl] = useState('/api/code/codeSearch/001');
+  const [commCode, setCommCode] = useState<CommCode[]>([]);
   
   useEffect(() => {
    
   },[]);
 
-  // 공통코드 가져오기
-  const EditSelectCell = (params: GridRenderEditCellParams) => {
-    const [commCode, setCommCode] = useState<CommCode[]>([]);
-    const { value, api, id, field } = params;
-
-    useEffect(() => {
-      const fetchCodes = async () => {
-        console.log("==== commcode ====");
-        try {
-          const response = await searchRows(rows, commCodeSearchUrl);
-          console.log("response.data  :: " , response.data);
-          setCommCode(response.data);
-        } catch (error) {
-          console.error('Error fetching up codes:', error);
-        }
-      };
-
-      fetchCodes();
-    }, []);
-
-    return (
-      <Select value={value || ''} onChange={(event) => api.setEditCellValue({ id, field, value: event.target.value })}>
-        {(commCode ?? []).map((option) => (
-          <MenuItem key={option.code_cd} value={option.code_cd}>
-            {option.code_nm}
-          </MenuItem>
-        ))}
-      </Select>
-    );
-  };
   
   // 행 추가 함수 정의
   const handleAddRow = () => {
@@ -248,6 +234,7 @@ export function CodeView() {
                     editMode='cell'   // cell로 설정해야 onCellEditStart, onCellEditStop 이벤트가 발생한다.
                     status
                     />
+
 
       <AlertSnackbar
         open={alertOpen} 
