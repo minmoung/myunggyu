@@ -90,7 +90,7 @@ export const searchRows = async (rows: any[] | null, searchUrl:String) => {
     });
     
     const result = await response.json();
-    console.log("result : ", result); // 서버 응답 처리
+    // console.log("result : ", result); // 서버 응답 처리
 
     return result; // 결과를 반환하여 호출하는 컴포넌트에서 처리
   } catch (error) {

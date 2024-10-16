@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
-import { MenuItem, Select } from '@mui/material';
-import { GridColDef, GridRowSelectionModel, GridRenderCellParams } from '@mui/x-data-grid';
+import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { saveRows, searchRows } from 'src/sections/comm/DatabaseApi';
@@ -13,6 +12,7 @@ import 'src/theme/styles/titleBox.css'
 import CmmDataGrid from '../../comm/CmmDataGrid';
 import CmmBtn from '../../comm/CmmBtn';
 import CmmMenuTitle from '../../comm/CmmMenuTitle';
+import { useFetchCommCode } from '../../comm/useFetchCommCode';
 
 // import { DataGridPremium } from '@mui/x-data-grid-premium';
 
@@ -38,38 +38,6 @@ interface CommCode {
 
 export function CodeView() {
 
-  // GridColDef 배열에 맞는 columns 정의
-  const upCodeColumns: GridColDef[] = [
-    {
-      field: 'col6',
-      headerName: '공통코드',
-      editable: true,
-      width: 150,
-      renderEditCell: (params) => <GridEditSelectCell {...params} />,
-      valueFormatter: (params : GridRenderCellParams) => {
-        // commCode 배열에서 현재 셀의 code_cd에 해당하는 code_nm을 찾아 반환
-        const selectedCode = commCode.find(code => code.code_cd === params.value);
-        console.log("selectedCode :: " , selectedCode);
-        console.log("params.value :: " , params.value);
-        return selectedCode ? selectedCode.code_nm : params.value; // 해당 코드가 없으면 원래 값을 반환
-      },
-      /*
-      valueFormatter: (params:GridValueFormatter) => {
-        // commCode 배열에서 현재 셀의 code_cd에 해당하는 code_nm을 찾아 반환
-        const selectedCode = commCode.find(code => code.code_cd === params.value);
-        return selectedCode ? selectedCode.code_nm : params.value;
-      }
-      */
-    },
-    { field: 'col1', headerName: 'COL1', width: 100, editable: true, flex:0.5, headerAlign: 'center'},
-    { field: 'col2', headerName: 'COL2', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col3', headerName: 'COL3', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col4', headerName: 'COL4', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col5', headerName: 'COL5', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    // { field: 'col6', headerName: 'COL6', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col7', headerName: 'COL7', width: 100, editable: true, type: 'number', flex:1, headerAlign: 'center'},
-  ];
-
   const [rows, setRows] = useState<RowData[]>([]);
   // const [upCodeRows, setUpCodeRows] = useState<RowUpCodeData[]>([]);
   const [searchUrl] = useState('/api/temp/search');
@@ -77,12 +45,58 @@ export function CodeView() {
   const [updateUrl] = useState('/api/temp/update');
   const [deleteUrl] = useState('/api/temp/delete');
   const [selectedRowsId, setSelectedRowsId] = useState<string[]>([]);
-  // const [selectedRowData, setSelectedRowData] = useState<RowUpCodeData>();
-  const [commCode, setCommCode] = useState<CommCode[]>([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('success');
   
+  // 각 공통 코드 호출을 별도로 선언
+  const { commCode: commCode_001, codeLoading: loading_001, codeError: fetchError_001 } = useFetchCommCode('001');
+  const { commCode: commCode_003, codeLoading: loading_003, codeError: fetchError_003 } = useFetchCommCode('003');
+  const { commCode: commCode_004, codeLoading: loading_004, codeError: fetchError_004 } = useFetchCommCode('004');
+  
+  if (loading_001 || loading_003 || loading_004) {
+    return <div>Loading...</div>;
+  }
+
+  if (fetchError_001 || fetchError_003 || fetchError_004) {
+    return <div>Error fetching comm codes</div>;
+  }
+  
+  // GridColDef 배열에 맞는 columns 정의
+  const upCodeColumns: GridColDef[] = [
+    {
+      field: 'col6',
+      headerName: '공통코드',
+      editable: true,
+      width: 150,
+      renderEditCell: (params) => (
+        <GridEditSelectCell
+            {...params}
+            commCode={commCode_004} // commCode 값을 props로 전달
+        />
+      ),
+      // 편집 모드가 아닐 때 code_cd를 code_nm으로 변환하여 표시
+      valueFormatter: (codeValue: String) => {
+        const selectedCode = commCode_004.find((code: CommCode) => code.code_cd === codeValue);
+        return selectedCode ? selectedCode.code_nm : codeValue; // code_nm을 표시하고, 없으면 code_cd 그대로
+      },
+    },
+    { field: 'col1', headerName: 'COL1', width: 90, editable: true, flex:2, headerAlign: 'center'},
+    { field: 'col2', headerName: 'COL2', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col3', headerName: 'COL3', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col4', headerName: 'COL4', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col5', headerName: 'COL5', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    // { field: 'col6', headerName: 'COL6', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col7', headerName: 'COL7', width: 90, editable: true, type: 'number', flex:2, headerAlign: 'center'},
+  ];
+
+
+  // commCode가 업데이트될 때 콘솔에 출력
   useEffect(() => {
-   
-  },[]);
+    if (commCode_004.length > 0) {
+        console.log("Updated commCode ::", commCode_004);
+    }
+  }, [commCode_004]); // commCode가 변경될 때만 실행
 
   
   // 행 추가 함수 정의
@@ -177,25 +191,21 @@ export function CodeView() {
       console.log("invalidFields :: ", invalidFields);
 
       if (invalidFields[0].col1) {
-        showAlert('col1은 필수 항목입니다', 'warning');  // 경고 메시지 출력
+        showAlert('col1는 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
 
       if (invalidFields[0].col2) {
-        showAlert('col2은은 필수 항목입니다', 'warning');  // 경고 메시지 출력
+        showAlert('col2는 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
 
       if (invalidFields[0].col3) {
-        showAlert('col3은는 필수 항목입니다', 'warning');  // 경고 메시지 출력
+        showAlert('col3는 필수 항목입니다', 'warning');  // 경고 메시지 출력
       }
       return false; // 유효하지 않음을 반환
     }
      return true;
   };
 
-
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('success');
 
   const showAlert = (message: string, severity: 'success' | 'error' | 'warning' | 'info') => {
       setAlertMessage(message);  // 메시지 정의
@@ -208,7 +218,7 @@ export function CodeView() {
       setAlertOpen(false);
   };
  
-
+  
   return (
 
     <DashboardContent>

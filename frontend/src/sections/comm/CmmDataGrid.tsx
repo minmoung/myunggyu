@@ -175,7 +175,7 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
         editMode={editMode} // 행 편집 모드 설정
         apiRef={apiRef}  // apiRef 추가
         processRowUpdate={processRowUpdate} // 업데이트 처리 함수
-        autoHeight
+        // autoHeight
         // 추가적으로, 각 행의 모델이 올바른 타입인지 확인
         // getRowId={(row) => (row as RowWithStatus).id ?? uuidv4()} // UUID로 Row ID 설정
         // getRowId={(row) => (row as RowWithStatus).id!}
