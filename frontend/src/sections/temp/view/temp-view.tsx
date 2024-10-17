@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Box from '@mui/material/Box';
-import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
-import { FormControl, FormHelperText, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { GridColDef, GridRenderCellParams, GridRowSelectionModel } from '@mui/x-data-grid';
+import { Button, FormControl, FormHelperText, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { saveRows, searchRows } from 'src/sections/comm/DatabaseApi';
@@ -14,6 +14,8 @@ import CmmDataGrid from '../../comm/CmmDataGrid';
 import CmmBtn from '../../comm/CmmBtn';
 import CmmMenuTitle from '../../comm/CmmMenuTitle';
 import { useFetchCommCode } from '../../comm/useFetchCommCode';
+// import renderCellExpand from '../../comm/GridCellExpand';
+import GridCellExpand from '../../comm/GridCellExpand';
 
 
 // import { DataGridPremium } from '@mui/x-data-grid-premium';
@@ -51,14 +53,12 @@ export function CodeView() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error' | 'warning' | 'info'>('success');
   
-  const [age, setAge] = React.useState(''); 
-
 
   // 각 공통 코드 호출을 별도로 선언
   const { commCode: commCode_001, codeLoading: loading_001, codeError: fetchError_001 } = useFetchCommCode('001');
   const { commCode: commCode_003, codeLoading: loading_003, codeError: fetchError_003 } = useFetchCommCode('003');
   const { commCode: commCode_004, codeLoading: loading_004, codeError: fetchError_004 } = useFetchCommCode('004');
-  const [selectedCode_001, setSelectedCode_001] = useState<string>(''); // 선택된 code_cd를 저장
+  const [selectedCode_004, setSelectedCode_004] = useState<string>(''); // 선택된 code_cd를 저장
   
   if (loading_001 || loading_003 || loading_004) {
     return <div>Loading...</div>;
@@ -68,9 +68,21 @@ export function CodeView() {
     return <div>Error fetching comm codes</div>;
   }
   
+  // tooltip 스크립트
+  const renderCellExpand = (params: GridRenderCellParams) => {
+    // params에서 필요한 값을 추출
+    // const width = params.colIndex; // 예시: 컬럼 인덱스를 width로 사용
+    const width = 90; // 예시: 컬럼 인덱스를 width로 사용
+    const value = params.value; // 실제 셀의 값을 사용
+    
+    return (
+      <GridCellExpand width={width} value={value} />
+    );
+  };
+
   // GridColDef 배열에 맞는 columns 정의
   const upCodeColumns: GridColDef[] = [
-    { field: 'col1', headerName: 'COL1', width: 90, editable: true, flex:2, headerAlign: 'center'},
+    { field: 'col1', headerName: 'COL1 EDIT', width: 90, editable: true, flex:2, headerAlign: 'center'},
     {
       field: 'col2',
       headerName: 'COL2 Select',
@@ -108,15 +120,30 @@ export function CodeView() {
         return selectedCode ? selectedCode.code_nm : codeValue; // code_nm을 표시하고, 없으면 code_cd 그대로
       },
     },
-    { field: 'col5', headerName: 'COL5', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col6', headerName: 'COL6', width: 100, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+    { field: 'col5', headerName: 'COL5 TIP', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center', renderCell: renderCellExpand},
+    // { field: 'col5', headerName: 'COL5', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center' },
+    { field: 'col6', headerName: 'COL6', width: 100, type: 'string', flex:2, headerAlign: 'center',
+      renderCell: (params: GridRenderCellParams<any, Date>) => (
+        <strong>
+          <Button
+            variant="contained"
+            size="medium"
+            style={{ marginLeft: 16 }}
+            tabIndex={params.hasFocus ? 0 : -1}
+          >
+            Open
+          </Button>
+          버튼
+        </strong>
+      )
+    },
     { field: 'col7', headerName: 'COL7', width: 90, editable: true, type: 'number', flex:2, headerAlign: 'center'},
   ];
 
   // useEffect(() => {
     
   // }); 
-
+  
   
   // 행 추가 함수 정의
   const handleAddRow = () => {
@@ -241,7 +268,7 @@ export function CodeView() {
   // Select 관련 이벤트
   const handleChange = (event: SelectChangeEvent) => {
     // setAge(event.target.value);
-    setSelectedCode_001(event.target.value);
+    setSelectedCode_004(event.target.value);
     
   };
 
@@ -256,7 +283,7 @@ export function CodeView() {
         <Select
           labelId="label_004"
           id="commCode_004"
-          value={selectedCode_001}
+          value={selectedCode_004}
           onChange={handleChange}
           label="코드1"
           // autoWidth
@@ -273,7 +300,7 @@ export function CodeView() {
         <Select
           labelId="commCode_004"
           id="commCode_004"
-          value={selectedCode_001}
+          value={selectedCode_004}
           onChange={handleChange}
           // autoWidth
         >
@@ -289,34 +316,32 @@ export function CodeView() {
         <Select
           labelId="demo-simple-select-helper-label"
           id="demo-simple-select-helper"
-          value={age}
+          value={selectedCode_004}
           label="Age"
           onChange={handleChange}
           // autoWidth
         >
-          <MenuItem value="">
-            <em>None</em>
+          {commCode_004 && commCode_004.map((code) => (
+          <MenuItem key={code.code_cd} value={code.code_cd}>
+            {code.code_nm} {/* code_nm을 표시 */}
           </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+        ))}
         </Select>
         <FormHelperText>With label + helper text</FormHelperText>
       </FormControl>
       <FormControl sx={{ m: 1, minWidth: 120 }}>
         <Select
-          value={age}
+          value={selectedCode_004}
           onChange={handleChange}
           // autoWidth
           displayEmpty
           inputProps={{ 'aria-label': 'Without label' }}
         >
-          <MenuItem value="">
-            <em>None</em>
+          {commCode_004 && commCode_004.map((code) => (
+          <MenuItem key={code.code_cd} value={code.code_cd}>
+            {code.code_nm} {/* code_nm을 표시 */}
           </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+        ))}
         </Select>
         <FormHelperText>Without label</FormHelperText>
       </FormControl>
