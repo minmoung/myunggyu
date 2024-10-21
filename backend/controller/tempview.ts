@@ -38,6 +38,7 @@ export async function insertTemp(req: Request, res: Response) {
           (info) => `(${info.col1} : ${info.col1})`
         ),
       });
+      return;  // return을 해줘야 아래 중복적으로 호출하는것을 방지할수 있다.
     }
 
     // 모든 데이터를 성공적으로 저장한 후 응답
@@ -75,8 +76,25 @@ export async function updateTemp(req: Request, res: Response) {
 
 // Delete
 export async function deleteTemp(req: Request, res: Response) {
-  const deleteInfo: PostTemp = req.body;
-  const deleteId = await tempData.deleteRow(deleteInfo);
-  res.status(201).json({ deleteId: deleteId });
+
+  const deleteInfos: PostTemp[] = req.body;
+  let deleteId: any[] = [];
+
+  try {
+    for (const deleteInfo of deleteInfos) {
+        const saveId = await tempData.deleteRow(deleteInfo);
+        deleteId.push(saveId);
+    }
+    
+    // 모든 데이터를 성공적으로 저장한 후 응답
+    res.status(201).json({ success: true, deleteId });
+
+  } catch (error) {
+    console.error("Error during user save operation:", error);
+
+    // 오류 발생 시 응답을 보낸 후 함수 종료
+    res.status(500).json({ success: false, message: "Failed to update user" });
+  }
+
 }
 
