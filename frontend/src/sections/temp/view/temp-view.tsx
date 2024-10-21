@@ -95,7 +95,7 @@ export function CodeView() {
   const duplicateUser = (id: GridRowId) => {
     setRows((prevRows) => {
       const rowToDuplicate = prevRows.find((row) => row.row_id === id)!;
-      return [...prevRows, { ...rowToDuplicate, id: Date.now() }];
+      return [...prevRows, { ...rowToDuplicate, status: 'insert' ,row_id: Date.now().toString() }];
     });
   };
 
@@ -221,11 +221,14 @@ export function CodeView() {
     }
     
     const result = await saveRows(rows, insertUrl, updateUrl, deleteUrl);
-    
+    console.log("result :: " , result);
     if (result.success) {
       // 상태값 갱신
       setRows((prevRows) => updateStatus(prevRows));
       showAlert(result.message, 'info');
+    }else
+    {
+      showAlert(result.msg, 'warning');  // 경고 메시지 출력
     }
   };
 
