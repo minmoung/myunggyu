@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid, GridCellEditStartParams, GridCellEditStopParams, GridColDef, GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
 import { v4 as uuidv4 } from 'uuid';
+import AutorenewIcon from '@mui/icons-material/Autorenew'
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+// import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import DefaultIcon from '@mui/icons-material/HelpOutline'; // 기본 상태 아이콘
+import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 
 interface CmmDataGridProps<T> {
   rows: T[];
@@ -104,31 +110,39 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
         renderCell: (params) => {
           // const statusValue = params.row['status'];
           const statusValue = params.row.status;
-          let displayText = '';
+          let IconComponent = DefaultIcon;  // 기본 아이콘 설정
+          // let displayText = '';
           let color = 'black';
 
           switch (statusValue) {
             case 'insert':
-              displayText = '신규';
+              // displayText = '신규';
+              IconComponent = AddCircleOutlineOutlinedIcon; // 수정된 상태 아이콘
               color = 'green';
               break;
             case 'update':
-              displayText = '수정됨';
+              // displayText = '수정됨';
+              IconComponent = AutorenewIcon; // 수정된 상태 아이콘
               color = 'blue';
               break;
             case 'delete':
-              displayText = '삭제됨';
+              // displayText = '삭제됨';
+              IconComponent = RemoveCircleOutlineOutlinedIcon;
               color = 'red';
               break;
             default:
-              displayText = '없음';
+              // displayText = '없음';
+              IconComponent = MoreHorizOutlinedIcon;
               color = 'gray';
               break;
           }
 
-          return <span style={{ color }}>{displayText}</span>;
+          // return <span style={{ color }}>{displayText}</span>;
+          return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                  <IconComponent style={{ color, fontSize: '24px' }} />
+                </div>
         },
-        width: 60,
+        width: 40,
       },
       ...columns,
     ]
@@ -188,6 +202,41 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
         onRowClick={handleRowClick}
         onCellClick={handleCellClick} // 클릭 이벤트 핸들러 추가
         onRowSelectionModelChange={handleRowSelectionModelChange}
+        sx={{
+          '& .MuiDataGrid-root': {
+            border: '2px solid #1976d2', // DataGrid 전체 테두리 스타일
+          },
+          '& .MuiDataGrid-cell': {
+            color: '#1976d2', // 셀 텍스트 색상
+            paddingLeft: '5px', // 기본 셀 패딩
+          },
+          '& .MuiDataGrid-cell--editing': {
+            backgroundColor: '#e3f2fd', // 편집 모드 배경색 (옵션)
+            paddingLeft: '2px ', // 편집 모드일 때도 같은 패딩 유지
+          },
+          '& .MuiDataGrid-columnHeaders': {
+            // backgroundColor: '#F4F6F8', // 헤더 배경색
+            color: '#637381', // 헤더 텍스트 색상
+            fontSize: 16, // 헤더 텍스트 크기
+          },
+          '& .MuiDataGrid-columnSeparator': {
+            display: 'none', // 헤더 컬럼 구분선 제거
+          },
+          '& .MuiDataGrid-row:hover': {
+            backgroundColor: '#f5f5f5', // 행 Hover 시 배경색
+          },
+          '& .MuiDataGrid-row.Mui-selected': {
+            backgroundColor: '#d1eaff', // 선택된 행의 배경색
+            '&:hover': {
+              backgroundColor: '#a0d7ff', // 선택된 상태에서 Hover 시 배경색
+            },
+            color: '#1976d2', // 선택된 행의 텍스트 색상
+          },
+          
+          // '& .MuiDataGrid-footerContainer': {
+          //  borderTop: '1px solid #1976d2', // 하단 푸터 테두리
+          // },
+        }}
       />
     
   );

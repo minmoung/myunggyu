@@ -13,6 +13,7 @@ export const saveRows = async (rows: any[], insertUrl:String, updateUrl:String, 
   console.log("deleteRows  ::", deleteRows);
   try {
 
+    // 기존 행을 추가하는 요청
     if (insertRows.length > 0) {
       const insertResponse = await fetch(`${backUrl}${insertUrl}`, {
         method: 'POST',
@@ -50,7 +51,7 @@ export const saveRows = async (rows: any[], insertUrl:String, updateUrl:String, 
     }
 
 
-    // 기존 행을 업데이트하는 요청
+    // 기존 행을 삭제하는 요청
     if (deleteRows.length > 0) {
       const updateResponse = await fetch(`${backUrl}${deleteUrl}`, {
         method: 'POST',
