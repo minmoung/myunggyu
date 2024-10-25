@@ -7,6 +7,8 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import DefaultIcon from '@mui/icons-material/HelpOutline'; // 기본 상태 아이콘
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import { components } from 'src/theme/core';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 interface CmmDataGridProps<T> {
   rows: T[];
@@ -179,9 +181,108 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
     }
   };
   
-  
+  // 사용자 정의 테마 생성
+  const theme = createTheme({
+    components: {
+      MuiDataGrid: {
+        styleOverrides: {
+          root: {
+            border: 'none', // DataGrid의 전체 테두리 제거
+            fontFamily: 'DM Sans, sans-serif', // 기본 폰트 설정
+          },
+          columnHeaders: {
+            fontSize: '14px', // 컬럼 헤더 텍스트 크기 설정
+            fontWeight: 600, // 컬럼 헤더 텍스트 굵기 설정
+            borderBottom: '1px solid #DDDDDD', // 컬럼 헤더 하단에 5px 빨간색 테두리 적용
+            borderTop: '2px solid #000000', // 컬럼 헤더 상단에 2px 검정색 테두리 적용
+            
+            // color: 'white', // 컬럼 헤더 텍스트 색상
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: '#F5FBFF', // 컬럼 헤더 배경색 강제 적용
+              // borderLeft: '1px solid #e0e0e0', // 컬럼 헤더의 왼쪽 구분선 추가
+              // borderRight: '1px solid #e0e0e0', // 컬럼 헤더의 오른쪽 구분선 추가
+              fontSize: '14px',
+              fontWeight: 600,
+            },
+            // // 첫 번째 컬럼 헤더의 왼쪽 보더 제거
+            // '& .MuiDataGrid-columnHeader:first-of-type': {
+            //   // borderLeft: 'none',
+            //   borderLeft: '1px solid #e0e0e0',
+            // },
+            // // 마지막 컬럼 헤더의 오른쪽 보더 제거
+            // '& .MuiDataGrid-columnHeader:last-of-type': {
+            //   borderRight: 'none',
+            // },
+            // 첫 번째 컬럼 헤더의 왼쪽 보더 제거
+            '& .MuiDataGrid-columnHeader:nth-child(1)': {
+              borderLeft: 'none',
+            },
+            // 마지막 컬럼 헤더의 오른쪽 보더 제거
+            '& .MuiDataGrid-columnHeader:last-child': {
+              borderRight: 'none',
+            },
+            // 안쪽 컬럼에만 좌우 구분선을 추가
+            '& .MuiDataGrid-columnHeader:not(:first-of-type):not(:last-of-type)': {
+              borderRight: '1px solid #DDDDDD', // 중간 컬럼에 우측 보더 추가
+            },
+          },
+          cell: {
+            // borderBottom: 'none', // 셀 하단 구분선 제거
+            borderBottom: '1px solid #DDDDDD', 
+            fontSize: '14px', // 셀 텍스트 크기 설정
+            fontFamily: 'DM Sans, sans-serif', // 기본 폰트 설정
+            // 편집 모드 스타일 추가
+            '&.MuiDataGrid-cell--editing': {
+              backgroundColor: '#e3f2fd', // 편집 모드 배경색
+              paddingLeft: '2px', // 편집 모드일 때 패딩 유지
+            },
+          },
+          columnSeparator: {
+            display: 'none', // 컬럼 구분선 제거
+            // display: '1px solid #DDDDDD',
+            // borderLeft: '1px solid #e0e0e0', // 셀의 왼쪽 구분선 추가
+          },
+          footerContainer: {
+            // borderTop: 'none', // 푸터 상단 테두리 제거
+          },
+          row: {
+            '&:hover': {
+              backgroundColor: '#f5f5f5', // 행 Hover 시 배경색 설정
+            },
+            '&.Mui-selected': {
+              backgroundColor: '#d1eaff', // 선택된 행의 배경색
+              paddingLeft: '2px', // 편집 모드일 때 패딩 유지
+              '&:hover': {
+                backgroundColor: '#a0d7ff', // 선택된 행 Hover 시 배경색
+              },
+              color: '#1976d2', // 선택된 행 텍스트 색상
+            },
+            '& .MuiDataGrid-cell': {
+              // borderRight: '1px solid #DDDDDD', // 각 셀의 오른쪽에 구분선 추가
+              // borderBottom : '1px solid #DDDDDD', // 셀의 하단 구분선 추가 (안쪽 구분선)
+              // borderLeft: '1px solid #e0e0e0', // 셀의 왼쪽 구분선 추가
+              // borderRight: '1px solid #e0e0e0', // 셀의 오른쪽 구분선 추가
+              
+            },
+            '& .MuiDataGrid-row:last-child .MuiDataGrid-cell': {
+              borderBottom: 'none', // 마지막 행의 셀에 하단 구분선 제거
+            },
+            // 첫 번째 컬럼의 왼쪽 보더 제거
+            '& .MuiDataGrid-cell:first-of-type': {
+              borderLeft: 'none',
+            },
+            // 마지막 컬럼의 오른쪽 보더 제거
+            '& .MuiDataGrid-cell:last-of-type': {
+              borderRight: 'none',
+            },
+          },
+        },
+      },
+    },
+  });
+
   return (
-    
+    <ThemeProvider theme={theme}>
       <DataGrid
         rows={rows as RowWithStatus[]}
         // rows={rows as (T & { id: string })[]} // rows를 id가 있는 형태로 타입 캐스팅
@@ -202,42 +303,18 @@ function CmmDataGrid<T>({ rows, setRows, columns, editMode = 'cell', getRowId, s
         onRowClick={handleRowClick}
         onCellClick={handleCellClick} // 클릭 이벤트 핸들러 추가
         onRowSelectionModelChange={handleRowSelectionModelChange}
-        sx={{
-          '& .MuiDataGrid-root': {
-            border: '2px solid #1976d2', // DataGrid 전체 테두리 스타일
-          },
-          '& .MuiDataGrid-cell': {
-            color: '#1976d2', // 셀 텍스트 색상
-            paddingLeft: '5px', // 기본 셀 패딩
-          },
-          '& .MuiDataGrid-cell--editing': {
-            backgroundColor: '#e3f2fd', // 편집 모드 배경색 (옵션)
-            paddingLeft: '2px ', // 편집 모드일 때도 같은 패딩 유지
-          },
-          '& .MuiDataGrid-columnHeaders': {
-            // backgroundColor: '#F4F6F8', // 헤더 배경색
-            color: '#637381', // 헤더 텍스트 색상
-            fontSize: 16, // 헤더 텍스트 크기
-          },
-          '& .MuiDataGrid-columnSeparator': {
-            display: 'none', // 헤더 컬럼 구분선 제거
-          },
-          '& .MuiDataGrid-row:hover': {
-            backgroundColor: '#f5f5f5', // 행 Hover 시 배경색
-          },
-          '& .MuiDataGrid-row.Mui-selected': {
-            backgroundColor: '#d1eaff', // 선택된 행의 배경색
-            '&:hover': {
-              backgroundColor: '#a0d7ff', // 선택된 상태에서 Hover 시 배경색
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
             },
-            color: '#1976d2', // 선택된 행의 텍스트 색상
           },
-          
-          // '& .MuiDataGrid-footerContainer': {
-          //  borderTop: '1px solid #1976d2', // 하단 푸터 테두리
-          // },
         }}
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
       />
+    </ThemeProvider>
     
   );
 }

@@ -9,6 +9,7 @@ import { saveRows, searchRows } from 'src/sections/comm/DatabaseApi';
 import AlertSnackbar from 'src/sections/comm/AlertSnackbar';
 import { updateStatus } from 'src/sections/comm/utils';
 import GridEditSelectCell from 'src/sections/comm/GridEditSelectCell';
+import CmmTableComp from 'src/sections/comm/tableComp/CmmTableComp';
 import * as XLSX from 'xlsx';
 import 'src/theme/styles/titleBox.css'
 
@@ -17,6 +18,7 @@ import CmmBtn from '../../comm/CmmBtn';
 import CmmMenuTitle from '../../comm/CmmMenuTitle';
 import { useFetchCommCode } from '../../comm/useFetchCommCode';
 import GridCellExpand from '../../comm/GridCellExpand';
+
 
 
 // import { DataGridPremium } from '@mui/x-data-grid-premium';
@@ -100,114 +102,41 @@ export function CodeView() {
     });
   };
 
-  // GridColDef 배열에 맞는 columns 정의
-  const upCodeColumns: GridColDef[] = [
-    { field: 'col1', headerName: '컬럼1 EDIT', width: 90, editable: true, flex:2, headerAlign: 'center'},
-    {
-      field: 'col2',
-      headerName: '컬럼2 Select',
-      editable: true,
-      width: 150,
-      renderEditCell: (params) => (
-        <GridEditSelectCell
-            {...params}
-            commCode={commCode_001} // commCode 값을 props로 전달
-        />
-      ),
-      // 편집 모드가 아닐 때 code_cd를 code_nm으로 변환하여 표시
-      valueFormatter: (codeValue: String) => {
-        const selectedCode = commCode_001.find((code: CommCode) => code.code_cd === codeValue);
-        return selectedCode ? selectedCode.code_nm : codeValue; // code_nm을 표시하고, 없으면 code_cd 그대로
-      },
-    },
-    // { field: 'col2', headerName: 'COL2', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    { field: 'col3', headerName: '컬럼3', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center',
-      // 편집 모드일 때의 셀 렌더링
-      renderEditCell: (params) => (
-        <TextField
-          value={params.value || ''}
-          onChange={(e) =>
-            params.api.setEditCellValue({
-              id: params.id,
-              field: params.field,
-              value: e.target.value,
-            })
-          }
-          fullWidth // TextField를 셀의 너비에 맞게 설정
-          InputProps={{
-            style: {
-              height: '100%', // 셀 높이와 동일하게 설정
-              padding: '8px', // 패딩 제거
-              border: 'none', // 보더 제거
-              boxSizing: 'border-box', // 패딩을 포함한 사이즈 계산
-              fontSize: 'inherit', // 그리드의 폰트 크기와 동일하게
-              fontFamily: 'inherit', // 그리드의 폰트 패밀리와 동일하게
-            },
-          disableUnderline: true, // 언더라인 제거
-          }}
-          variant="standard"
-        />
-      ),
-      // 편집모드가 불가능할때의 셀 렌더링
-      // renderCell: (params) => (
-      //   <TextField
-      //     value={params.value}
-      //     // variant="standard"
-      //     InputProps={{
-      //       style: { padding: '0', margin: '0' }, // 패딩 및 마진 조정
-      //     }}
-      //   />
-      // ),
-    },
-    // { field: 'col4', headerName: 'COL4', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
-    {
-      field: 'col4',
-      headerName: '컬럼4 Select',
-      editable: true,
-      width: 150,
-      renderEditCell: (params) => (
-        <GridEditSelectCell
-            {...params}
-            commCode={commCode_004} // commCode 값을 props로 전달
-        />
-      ),
-      // 편집 모드가 아닐 때 code_cd를 code_nm으로 변환하여 표시
-      valueFormatter: (codeValue: String) => {
-        const selectedCode = commCode_004.find((code: CommCode) => code.code_cd === codeValue);
-        return selectedCode ? selectedCode.code_nm : codeValue; // code_nm을 표시하고, 없으면 code_cd 그대로
-      },
-    },
-    { field: 'col5', headerName: '컬럼5 TIP', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center', renderCell: renderCellExpand},
-    // { field: 'col5', headerName: 'COL5', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center' },
-    { field: 'col6', headerName: '컬럼6', width: 100, type: 'string', flex:2, headerAlign: 'center',
-      renderCell: (params: GridRenderCellParams<any, Date>) => (
-        <strong>
-          <Button
-            variant="contained"
-            size="medium"
-            style={{ marginLeft: 16 }}
-            tabIndex={params.hasFocus ? 0 : -1}
-          >
-            Open
-          </Button>
-          버튼
-        </strong>
-      )
-    },
-    { field: 'col7', headerName: '컬럼7', width: 90, editable: true, type: 'number', flex:2, headerAlign: 'center'},
-    
-    {
-      field: 'actions',
-      type: 'actions',
-      width: 80,
-      getActions: (params) => [
-        <GridActionsCellItem icon={<Delete />} label="Delete" onClick={() => deleteUser(params.id)} />,
-        <GridActionsCellItem icon={<Security />} label="Toggle Admin" onClick={() => toggleAdmin(params.id)} showInMenu />,
-        <GridActionsCellItem icon={<FileCopy />} label="Duplicate User" onClick={() => duplicateUser(params.id)} showInMenu />,
-      ],
-    },
-    
+  const headLabel = [
+    { id: 'col1', label: '컬럼1' },
+    { id: 'col2', label: '컬럼2' },
+    { id: 'col3', label: '컬럼3' },
+    { id: 'col4', label: '컬럼4' },
+    { id: 'col5', label: '컬럼5' },
+    { id: 'col6', label: '컬럼6' },
+    { id: 'sort', label: '정렬순서' },
+    { id: '', label: '' },
   ];
+
+  // GridColDef 배열에 맞는 columns 정의
+  // const upCodeColumns:HeadLabel[] = [
+  //   { field: 'col1', headerName: '컬럼1 EDIT', width: 90, editable: true, flex:2, headerAlign: 'center'},
+  //   {
+  //     field: 'col2',
+  //     headerName: '컬럼2 Select',
+  //     editable: true,
+  //     width: 150,
+  //   },
+  //   // { field: 'col2', headerName: 'COL2', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+  //   { field: 'col3', headerName: '컬럼3', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+  //   // { field: 'col4', headerName: 'COL4', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+  //   {
+  //     field: 'col4',
+  //     headerName: '컬럼4 Select',
+  //     editable: true,
+  //     width: 150,  
+  //   },
+  //   { field: 'col5', headerName: '컬럼5 TIP', width: 90, editable: true, type: 'string', flex:2, headerAlign: 'center'},
+  //   { field: 'col6', headerName: '컬럼6', width: 100, type: 'string', flex:2, headerAlign: 'center'},
+  //   { field: 'col7', headerName: '컬럼7', width: 90, editable: true, type: 'number', flex:2, headerAlign: 'center'},
+  //   { field: 'actions', type: 'actions', width: 80,},
+    
+  // ];
 
   // useEffect(() => {
     
@@ -233,6 +162,7 @@ export function CodeView() {
 
   
   const handleSearchRow = async (e: React.FormEvent) => {
+    
     e.preventDefault();
       const result = await searchRows(rows, searchUrl);
       
@@ -241,6 +171,7 @@ export function CodeView() {
         showAlert(result.message, 'warning');
       }
       setRows(result);
+      console.log("setRows  ::" , rows);
   };
 
   const handleRowClick = (params : any) => {
@@ -362,7 +293,7 @@ export function CodeView() {
     >
       <DashboardContent>
         
-        <CmmMenuTitle title='Temp1'/>
+        <CmmMenuTitle title='Temp2'/>
         <div>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="label_004">코드 004 Select1</InputLabel>
@@ -441,17 +372,40 @@ export function CodeView() {
         </Box>
 
         
-        <CmmDataGrid rows={rows}
-                      setRows={setRows}
-                      columns={upCodeColumns}
-                      // getRowId={(row) => upCodeRows.length}
-                      getRowId={(row) => row.row_id}
-                      onRowSelectionModelChange={handleSelectionChange}
-                      // onCellClick={handleCellClick}
-                      onRowClick={handleRowClick}
-                      editMode='cell'   // cell로 설정해야 onCellEditStart, onCellEditStop 이벤트가 발생한다.
-                      status
-                      />
+        {/* <Scrollbar>
+          <Box display="flex" alignItems="center" mb={0} gap={0.5}>
+            <Typography variant="h4" flexGrow={1}>
+              Menu Group
+            </Typography>
+            <Button
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="mingcute:add-line" />}
+              onClick={newTopMenuPop}
+            >
+              New Menu Grp
+            </Button>
+            <Button
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="mingcute:search-line" />}
+              onClick={fetchData}
+            >
+              Search
+            </Button>
+          </Box> */}
+          
+          {/* <MenuTableToolbar
+              numSelected={table.selected.length}
+              filterName={filterName}
+              onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setFilterName(event.target.value);
+              table.onResetPage();
+            }}
+          /> */}
+            <CmmTableComp rows={rows} setRows={setRows} headLabel={headLabel} />
+
+          {/* </Scrollbar> */}
 
 
         <AlertSnackbar

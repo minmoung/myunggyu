@@ -16,6 +16,7 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const MenuPage = lazy(() => import('src/pages/menu'));
 export const CodePage = lazy(() => import('src/pages/code'));
 export const TempPage = lazy(() => import('src/pages/temp'));
+export const TempPage2 = lazy(() => import('src/pages/temp2'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -65,6 +66,7 @@ export function Router() {
         { path: 'menu', element: <MenuPage /> },
         { path: 'code', element: <CodePage /> },
         { path: 'temp', element: <TempPage /> },
+        { path: 'temp2', element: <TempPage2 /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],

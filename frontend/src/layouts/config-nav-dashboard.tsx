@@ -33,6 +33,11 @@ export const navData = [
     path: '/temp',
     icon: icon('ic-cart'),
   },
+  {
+    title: 'Templates2',
+    path: '/temp2',
+    icon: icon('ic-cart'),
+  },
   /*
   {
     title: 'Templates2',
