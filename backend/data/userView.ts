@@ -5,6 +5,8 @@ import { PostAdmin, GetAdmin, GetCnt } from "../model/userView";
 export async function searchUser(): Promise<Array<GetAdmin>> {
   const query: string =
     "select user_id, user_name as user_nm, email, phone_no, pwd from users";
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
   return db.execute(query).then((result: any) => result[0]);
 }
 
