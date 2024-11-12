@@ -1,8 +1,8 @@
-import { db } from "../nodeMysql/database";
-import { PostAdmin, GetAdmin, GetCnt } from "../model/userView";
+import { db } from "../../../../nodeMysql/database";
+import { PostComm_001, GetComm_001, GetCnt } from "../../../../model/dashboard/comm/comm_001/comm_001_mdl";
 
 
-export async function searchUser(): Promise<Array<GetAdmin>> {
+export async function searchUser(): Promise<Array<GetComm_001>> {
   const query: string =
     "select row_number() over (order by user_id desc) as row_id, user_id, user_name as user_nm, email, phone_no, pwd from users";
   // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
@@ -12,7 +12,7 @@ export async function searchUser(): Promise<Array<GetAdmin>> {
 
 
 // insert 전에 동일 사용자 체크
-export async function checkUser(userInfo: PostAdmin): Promise<Array<GetCnt>> {
+export async function checkUser(userInfo: PostComm_001): Promise<Array<GetCnt>> {
   const { user_id } = userInfo;
   const query: string =
     "select count(*) as cnt from users where user_id = ?";
@@ -20,7 +20,7 @@ export async function checkUser(userInfo: PostAdmin): Promise<Array<GetCnt>> {
 }
 
 
-export async function insertUser(userInfo: PostAdmin): Promise<string> {
+export async function insertUser(userInfo: PostComm_001): Promise<string> {
   const {
     user_id,
     user_nm,
@@ -48,37 +48,7 @@ export async function insertUser(userInfo: PostAdmin): Promise<string> {
 }
 
 
-// export async function updateUser(newAdminInfo: PostAdmin): Promise<string> {
-//   const {
-//     user_id,
-//     user_nm,
-//     // sex,
-//     phone_no,
-//     email,
-//     pwd,
-//   } = newAdminInfo;
-
-//   const query: string =
-//     `update users set
-//        user_name = ?
-//        ,email  = ?
-//        ,phone_no = ?
-//        ,pwd  = ?
-//      where user_id = ?
-//      `;
-//   return db
-//     .execute(query, [
-//       user_nm,
-//       // sex,
-//       phone_no,
-//       email,
-//       pwd,
-//       user_id,
-//     ])
-//     .then((result: any) => result[0].updateId);
-// }
-
-export async function updateUser(userInfo: PostAdmin): Promise<number> {
+export async function updateUser(userInfo: PostComm_001): Promise<number> {
 
   const user = Array.isArray(userInfo) ? userInfo[0] : userInfo;
 
@@ -125,7 +95,7 @@ export async function updateUser(userInfo: PostAdmin): Promise<number> {
   }
 }
 
-export async function deleteUser(userInfo: PostAdmin): Promise<string> {
+export async function deleteUser(userInfo: PostComm_001): Promise<string> {
   const { user_id } = userInfo;
 
   const query: string =

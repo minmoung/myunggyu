@@ -13,12 +13,11 @@ export async function searchUser(req: Request, res: Response) {
 // Save
 export async function saveUser(req: Request, res: Response) {
   const saveInfo: PostAdmin = req.body;
-  console.log("saveInfo.tran_gb : ",saveInfo.tran_gb);
   let saveId;
   let userCnt;
   try {
-
-    if(saveInfo.tran_gb == "insert")
+    console.log("saveInfo.status  :: " , saveInfo.status);
+    if(saveInfo.status == "insert")
     {
       userCnt = await userViewData.checkUser(saveInfo);
       console.log("userCnt :",userCnt);
@@ -26,7 +25,12 @@ export async function saveUser(req: Request, res: Response) {
       {
         saveId = await userViewData.insertUser(saveInfo);
       }else{
-        return res.status(201).json({ message: "중복된 사용자가 존재합니다.\n(" + saveInfo.user_id + " : " + saveInfo.user_nm +")"});
+        // 중복된 데이터가 있을 경우
+        res.status(201).json({
+          success: false,
+          message: "중복된 사용자가 존재합니다.\n(" + saveInfo.user_id + " : " + saveInfo.user_nm +")",
+        });
+        return;
       }
 
     }else{
@@ -34,13 +38,13 @@ export async function saveUser(req: Request, res: Response) {
     }
 
     // 정상적으로 saveId를 얻으면 클라이언트에 응답
-    return res.status(201).json({ saveId });
+    res.status(201).json({ success: true, saveId });
 
   } catch (error) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    return res.status(500).json({ message: "Failed to save user data" });
+    res.status(500).json({ success: false, message: "Failed to save user data" });
   }
   // res.status(201).json({ saveId: saveId });
 }

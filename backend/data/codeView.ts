@@ -44,6 +44,8 @@ export async function updateUpCode(codeInfo: PostUpCode): Promise<number> {
     update_id,
   } = codeInfo;
 
+  console.log("codeInfo ::" , codeInfo);
+
   const query: string = `
     update up_codes set
       up_code_nm = ?
