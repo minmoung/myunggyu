@@ -1,0 +1,218 @@
+import { db } from "../../../../nodeMysql/database";
+import { PostComm_002_01, PostComm_002_02, GetComm_002_01, GetComm_002_02, GetCnt } from "../../../../model/dashboard/comm/comm_002/comm_002_mdl";
+
+
+export async function search01(): Promise<Array<GetComm_002_01>> {
+  const query: string =
+    `select row_number() over (order by top_menu_id desc) as row_id, 
+          top_menu_id,
+          top_menu_nm,
+          sort,
+          insert_id,
+          insert_date,
+          update_id,
+          update_date
+      from comm.top_menus`;
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
+  return db.execute(query).then((result: any) => result[0]);
+}
+
+export async function search02(): Promise<Array<GetComm_002_02>> {
+  const query: string =
+    `select row_number() over (order by top_menu_id, menu_id desc) as row_id,
+            top_menu_id,
+            '' as top_menu_nm,
+            menu_id,
+            menu_nm,
+            sort,
+            insert_id,
+            insert_date,
+            update_id,
+            update_date
+     from menus`;
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
+  return db.execute(query).then((result: any) => result[0]);
+}
+
+
+// insert 전에 동일 사용자 체크
+export async function checkPk01(userInfo: PostComm_002_01): Promise<Array<GetCnt>> {
+  const { top_menu_id } = userInfo;
+  const query: string =
+    "select count(*) as cnt from menus where menu_id = ?";
+  return db.execute(query, [top_menu_id]).then((result: any) => result[0]);
+}
+
+
+// insert 전에 동일 사용자 체크
+export async function checkPk02(userInfo: PostComm_002_02): Promise<Array<GetCnt>> {
+  const { top_menu_id, menu_id } = userInfo;
+  const query: string =
+    "select count(*) as cnt from menus where menu_id = ?";
+  return db.execute(query, [top_menu_id, menu_id]).then((result: any) => result[0]);
+}
+
+
+export async function insert01(insertInfo: PostComm_002_01): Promise<string> {
+  const {
+    top_menu_id,
+    top_menu_nm,
+    sort,
+  } = insertInfo;
+
+  console.log("insertInfo ::" , insertInfo);
+
+  const query: string =
+    "INSERT INTO comm.top_menus (top_menu_id, top_menu_nm, sort, insert_date) VALUES (?, ?, ?, NOW())";
+  return db
+    .execute(query, [
+      top_menu_id,
+      top_menu_nm,
+      sort
+    ])
+    .then((result: any) => result[0].insertId);
+}
+
+
+export async function insert02(insertInfo: PostComm_002_02): Promise<string> {
+  const {
+    top_menu_id,
+    menu_id,
+    menu_nm,
+    sort,
+  } = insertInfo;
+
+  console.log("userInfo ::" , insertInfo);
+
+  const query: string =
+    "insert into comm.menus (top_menu_id, menu_id, menu_nm, sort, insert_id, insert_date) VALUES (?, ?, ?, ?, ?, NOW())";
+  return db
+    .execute(query, [
+      top_menu_id,
+      menu_id,
+      menu_nm,
+      sort,
+    ])
+    .then((result: any) => result[0].insertId);
+}
+
+
+
+export async function update01(updateInfo: PostComm_002_01): Promise<number> {
+
+  const param = Array.isArray(updateInfo) ? updateInfo[0] : updateInfo;
+
+  const {
+    top_menu_id,
+    top_menu_nm,
+    sort,
+    update_id,
+  } = param;
+
+  const query: string = `
+    update comm.top_menus set
+      top_menu_nm = ?
+      ,sort = ?
+      ,update_id = ?
+      ,update_date = NOW()
+    where top_menu_id = ?
+  `;
+
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
+  console.log('With Parameters:', updateInfo);
+
+  try {
+    // 데이터베이스 쿼리 실행
+    const [result]: any = await db.execute(query, [
+      top_menu_nm,
+      sort,
+      update_id,
+      top_menu_id
+    ]);
+
+    // 업데이트된 행의 수를 반환
+    return result.affectedRows;
+
+  } catch (error) {
+    // 오류 처리
+    console.error("Error updating user:", error);
+    throw new Error("Failed to update user");
+  }
+}
+
+
+export async function update02(updateInfo: PostComm_002_02): Promise<number> {
+
+  const user = Array.isArray(updateInfo) ? updateInfo[0] : updateInfo;
+
+  const {
+    user_id,
+    user_nm,
+    // sex,
+    phone_no,
+    email,
+    pwd,
+  } = user;
+
+  const query: string = `
+    update comm.menus set
+      menu_nm = ?
+      ,sort = ?
+      ,update_id = ?
+      ,update_date = NOW()
+    where menu_id = ?
+  `;
+
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);
+  console.log('With Parameters:', updateInfo);
+
+  try {
+    // 데이터베이스 쿼리 실행
+    const [result]: any = await db.execute(query, [
+      user_nm,
+      // sex,
+      phone_no,
+      email,
+      pwd,
+      user_id,
+    ]);
+
+    // 업데이트된 행의 수를 반환
+    return result.affectedRows;
+
+  } catch (error) {
+    // 오류 처리
+    console.error("Error updating user:", error);
+    throw new Error("Failed to update user");
+  }
+}
+
+export async function delete01(userInfo: PostComm_002_01): Promise<string> {
+  const { top_menu_id } = userInfo;
+
+  const query: string =
+    "delete from comm.top_menus WHERE top_menu_id = ?";
+  return db
+    .execute(query, [
+      top_menu_id
+    ])
+    .then((result: any) => result[0].insertId);
+}
+
+
+export async function delete02(userInfo: PostComm_002_02): Promise<string> {
+  const { top_menu_id, menu_id } = userInfo;
+
+  const query: string =
+    "delete from comm.menus WHERE top_menu_id = ? and menu_id = ?";
+  return db
+    .execute(query, [
+      top_menu_id,
+      menu_id,
+    ])
+    .then((result: any) => result[0].insertId);
+}
