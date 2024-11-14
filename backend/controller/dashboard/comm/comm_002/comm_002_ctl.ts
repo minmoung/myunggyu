@@ -11,8 +11,9 @@ export async function search01(req: Request, res: Response) {
 
 // 모든 admin user 들을 배열로 전송하도록 설계
 export async function search02(req: Request, res: Response) {
-  const searchInfo: Array<GetComm_002_02> = await comm_002_data.search02();
-  res.send(searchInfo);
+  const selectInfo: PostComm_002_01 = req.body; // 여러 행을 배열로 받음
+  const searchResult: Array<GetComm_002_01> = await comm_002_data.search02(selectInfo);
+  res.send(searchResult);
 }
 
 

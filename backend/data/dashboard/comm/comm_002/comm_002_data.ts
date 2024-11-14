@@ -18,7 +18,8 @@ export async function search01(): Promise<Array<GetComm_002_01>> {
   return db.execute(query).then((result: any) => result[0]);
 }
 
-export async function search02(): Promise<Array<GetComm_002_02>> {
+export async function search02(searchInfo: PostComm_002_01): Promise<Array<GetComm_002_01>> {
+  const { top_menu_id } = searchInfo;
   const query: string =
     `select row_number() over (order by top_menu_id, menu_id desc) as row_id,
             top_menu_id,
@@ -30,10 +31,11 @@ export async function search02(): Promise<Array<GetComm_002_02>> {
             insert_date,
             update_id,
             update_date
-     from menus`;
+     from menus
+     where top_menu_id = ?`;
   // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
-  console.log('Executing SQL:', query);
-  return db.execute(query).then((result: any) => result[0]);
+  console.log('Executing SQL:', query, [top_menu_id]);
+  return db.execute(query, [top_menu_id]).then((result: any) => result[0]);
 }
 
 
