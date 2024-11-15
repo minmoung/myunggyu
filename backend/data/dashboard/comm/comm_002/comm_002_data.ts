@@ -39,20 +39,20 @@ export async function search02(searchInfo: PostComm_002_01): Promise<Array<GetCo
 }
 
 
-// insert 전에 동일 사용자 체크
-export async function checkPk01(userInfo: PostComm_002_01): Promise<Array<GetCnt>> {
-  const { top_menu_id } = userInfo;
+// insert 전에 동일 메뉴 체크
+export async function checkPk01(menuInfo: PostComm_002_01): Promise<Array<GetCnt>> {
+  const { top_menu_id } = menuInfo;
   const query: string =
-    "select count(*) as cnt from menus where menu_id = ?";
+    "select count(*) as cnt from comm.top_menus where top_menu_id = ?";
   return db.execute(query, [top_menu_id]).then((result: any) => result[0]);
 }
 
 
-// insert 전에 동일 사용자 체크
-export async function checkPk02(userInfo: PostComm_002_02): Promise<Array<GetCnt>> {
-  const { top_menu_id, menu_id } = userInfo;
+// insert 전에 동일 메뉴 체크
+export async function checkPk02(menuInfo: PostComm_002_02): Promise<Array<GetCnt>> {
+  const { top_menu_id, menu_id } = menuInfo;
   const query: string =
-    "select count(*) as cnt from menus where menu_id = ?";
+    "select count(*) as cnt from menus where top_menu_id = ? and menu_id = ?";
   return db.execute(query, [top_menu_id, menu_id]).then((result: any) => result[0]);
 }
 
@@ -67,7 +67,7 @@ export async function insert01(insertInfo: PostComm_002_01): Promise<string> {
   console.log("insertInfo ::" , insertInfo);
 
   const query: string =
-    "INSERT INTO comm.top_menus (top_menu_id, top_menu_nm, sort, insert_date) VALUES (?, ?, ?, NOW())";
+    "insert into comm.top_menus (top_menu_id, top_menu_nm, sort, insert_date) VALUES (?, ?, ?, NOW())";
   return db
     .execute(query, [
       top_menu_id,
@@ -89,7 +89,7 @@ export async function insert02(insertInfo: PostComm_002_02): Promise<string> {
   console.log("userInfo ::" , insertInfo);
 
   const query: string =
-    "insert into comm.menus (top_menu_id, menu_id, menu_nm, sort, insert_id, insert_date) VALUES (?, ?, ?, ?, ?, NOW())";
+    "insert into comm.menus (top_menu_id, menu_id, menu_nm, sort,  insert_date) VALUES (?, ?, ?, ?, NOW())";
   return db
     .execute(query, [
       top_menu_id,
@@ -117,7 +117,7 @@ export async function update01(updateInfo: PostComm_002_01): Promise<number> {
     update comm.top_menus set
       top_menu_nm = ?
       ,sort = ?
-      ,update_id = ?
+      
       ,update_date = NOW()
     where top_menu_id = ?
   `;
@@ -131,7 +131,7 @@ export async function update01(updateInfo: PostComm_002_01): Promise<number> {
     const [result]: any = await db.execute(query, [
       top_menu_nm,
       sort,
-      update_id,
+      
       top_menu_id
     ]);
 

@@ -68,10 +68,10 @@ export async function insert02(req: Request, res: Response) {
   try {
     for (const saveInfo of saveInfos) {
       console.log("===== selectCnt =====");
-      const userCnt = await comm_002_data.checkPk02(saveInfo);
-      console.log("userCnt :", userCnt);
+      const cnt = await comm_002_data.checkPk02(saveInfo);
+      console.log("cnt :", cnt);
 
-      if (userCnt[0].cnt < 1) {
+      if (cnt[0].cnt < 1) {
         const saveId = await comm_002_data.insert02(saveInfo);
         saveIds.push(saveId);
       } else {
