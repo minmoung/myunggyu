@@ -53,6 +53,8 @@ export async function checkPk02(menuInfo: PostComm_002_02): Promise<Array<GetCnt
   const { top_menu_id, menu_id } = menuInfo;
   const query: string =
     "select count(*) as cnt from menus where top_menu_id = ? and menu_id = ?";
+  // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
+  console.log('Executing SQL:', query);  
   return db.execute(query, [top_menu_id, menu_id]).then((result: any) => result[0]);
 }
 
