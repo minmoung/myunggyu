@@ -150,24 +150,24 @@ export async function update01(updateInfo: PostComm_002_01): Promise<number> {
 
 export async function update02(updateInfo: PostComm_002_02): Promise<number> {
 
-  const user = Array.isArray(updateInfo) ? updateInfo[0] : updateInfo;
+  const param = Array.isArray(updateInfo) ? updateInfo[0] : updateInfo;
 
   const {
-    user_id,
-    user_nm,
-    // sex,
-    phone_no,
-    email,
-    pwd,
-  } = user;
+    top_menu_id,
+    menu_id,
+    menu_nm,
+    sort,
+    update_id,
+  } = param;
 
   const query: string = `
     update comm.menus set
       menu_nm = ?
       ,sort = ?
-      ,update_id = ?
+      
       ,update_date = NOW()
-    where menu_id = ?
+    where top_menu_id = ?
+      and menu_id = ?
   `;
 
   // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
@@ -177,12 +177,11 @@ export async function update02(updateInfo: PostComm_002_02): Promise<number> {
   try {
     // 데이터베이스 쿼리 실행
     const [result]: any = await db.execute(query, [
-      user_nm,
-      // sex,
-      phone_no,
-      email,
-      pwd,
-      user_id,
+      menu_nm,
+      sort,
+      
+      top_menu_id,
+      menu_id,
     ]);
 
     // 업데이트된 행의 수를 반환
@@ -190,8 +189,8 @@ export async function update02(updateInfo: PostComm_002_02): Promise<number> {
 
   } catch (error) {
     // 오류 처리
-    console.error("Error updating user:", error);
-    throw new Error("Failed to update user");
+    console.error("Error updating menu:", error);
+    throw new Error("Failed to update menu");
   }
 }
 

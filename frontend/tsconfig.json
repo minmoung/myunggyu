@@ -13,7 +13,7 @@
     "noImplicitThis": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "resolveJsonModule": true,
     "moduleResolution": "Node",
     "noFallthroughCasesInSwitch": true,

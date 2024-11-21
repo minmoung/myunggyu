@@ -159,7 +159,7 @@ import { UserProps } from '../user-table-row';
 
         handleClose(); // 다이얼로그 닫기
         } catch (error) {
-        console.error('Error:', error);
+          console.error('Error:', error);
         }
     };
 
