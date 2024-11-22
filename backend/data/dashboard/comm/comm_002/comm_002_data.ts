@@ -194,8 +194,8 @@ export async function update02(updateInfo: PostComm_002_02): Promise<number> {
   }
 }
 
-export async function delete01(userInfo: PostComm_002_01): Promise<string> {
-  const { top_menu_id } = userInfo;
+export async function delete01(deleteInfo: PostComm_002_01): Promise<string> {
+  const { top_menu_id } = deleteInfo;
 
   const query: string =
     "delete from comm.top_menus WHERE top_menu_id = ?";
@@ -203,12 +203,12 @@ export async function delete01(userInfo: PostComm_002_01): Promise<string> {
     .execute(query, [
       top_menu_id
     ])
-    .then((result: any) => result[0].insertId);
+    .then((result: any) => result[0].deleteId);
 }
 
 
-export async function delete02(userInfo: PostComm_002_02): Promise<string> {
-  const { top_menu_id, menu_id } = userInfo;
+export async function delete02(deleteInfo: PostComm_002_02): Promise<string> {
+  const { top_menu_id, menu_id } = deleteInfo;
 
   const query: string =
     "delete from comm.menus WHERE top_menu_id = ? and menu_id = ?";
@@ -217,5 +217,5 @@ export async function delete02(userInfo: PostComm_002_02): Promise<string> {
       top_menu_id,
       menu_id,
     ])
-    .then((result: any) => result[0].insertId);
+    .then((result: any) => result[0].deleteId);
 }

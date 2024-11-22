@@ -55,7 +55,7 @@ export async function insert01(req: Request, res: Response) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ success: false, message: "Failed to save user data" });
+    res.status(500).json({ success: false, message: "Failed to insert top_menu" });
   }
 }
 
@@ -98,7 +98,7 @@ export async function insert02(req: Request, res: Response) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ success: false, message: "Failed to save user data" });
+    res.status(500).json({ success: false, message: "Failed to insert menu" });
   }
 }
 
@@ -120,7 +120,7 @@ export async function update01(req: Request, res: Response) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ success: false, message: "Failed to update user" });
+    res.status(500).json({ success: false, message: "Failed to update top_menu" });
   }
 }
 
@@ -141,7 +141,7 @@ export async function update02(req: Request, res: Response) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ success: false, message: "Failed to update user" });
+    res.status(500).json({ success: false, message: "Failed to update menu" });
   }
 }
 
@@ -164,7 +164,7 @@ export async function delete01(req: Request, res: Response) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ success: false, message: "Failed to update user" });
+    res.status(500).json({ success: false, message: "Failed to delete top_menu" });
   }
 
 }
@@ -189,7 +189,7 @@ export async function delete02(req: Request, res: Response) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    res.status(500).json({ success: false, message: "Failed to update user" });
+    res.status(500).json({ success: false, message: "Failed to delete menu" });
   }
 
 }
