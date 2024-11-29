@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PostMenuTop, GetMenuTop, GetMenu } from "../../model/dashboard/dashboardModel";
 import * as dashboardData from "../../data/dashboard/dashboardData";
+import { PostMenu, PostTopMenu } from "../../model/menuView";
 
 
 // 모든 admin user 들을 배열로 전송하도록 설계
@@ -16,8 +17,9 @@ export async function searchTopMenu(req: Request, res: Response) {
 
 // 모든 admin user 들을 배열로 전송하도록 설계
 export async function searchMenu(req: Request, res: Response) {
+  const searchParam: PostTopMenu = req.body;
   try {
-    const searchInfo: Array<GetMenu> = await dashboardData.searchMenu();
+    const searchInfo: Array<GetMenu> = await dashboardData.searchMenu(searchParam);
     res.send(searchInfo);
   } catch (error) {
     console.error("Error occurred:", error);
