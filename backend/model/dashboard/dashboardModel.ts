@@ -23,6 +23,7 @@
     top_menu_id: string;
     menu_id: string;
     menu_nm: string;
+    href: string;
     sort: string;
     insert_id: string;
     insert_date: string;
@@ -34,6 +35,7 @@
     top_menu_id: string;
     menu_id: string;
     menu_nm: string;
+    href: string;
     sort: string;
     insert_id: string;
     insert_date: string;
