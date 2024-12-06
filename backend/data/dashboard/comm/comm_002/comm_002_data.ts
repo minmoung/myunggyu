@@ -28,6 +28,7 @@ export async function search02(searchInfo: PostComm_002_01): Promise<Array<GetCo
             menu_id,
             menu_nm,
             href,
+            use_yn,
             sort,
             insert_id,
             insert_date,
@@ -89,19 +90,21 @@ export async function insert02(insertInfo: PostComm_002_02): Promise<string> {
     menu_id,
     menu_nm,
     href,
+    use_yn,
     sort,
   } = insertInfo;
 
   console.log("userInfo ::" , insertInfo);
 
   const query: string =
-    "insert into comm.menus (top_menu_id, menu_id, menu_nm, href, sort,  insert_date) VALUES (?, ?, ?, ?, ?, NOW())";
+    "insert into comm.menus (top_menu_id, menu_id, menu_nm, href, use_yn, sort, insert_date) VALUES (?, ?, ?, ?, ?, ?, NOW())";
   return db
     .execute(query, [
       top_menu_id,
       menu_id,
       menu_nm,
       href,
+      use_yn,
       sort,
     ])
     .then((result: any) => result[0].insertId);
@@ -162,6 +165,7 @@ export async function update02(updateInfo: PostComm_002_02): Promise<number> {
     menu_id,
     menu_nm,
     href,
+    use_yn,
     sort,
     update_id,
   } = param;
@@ -170,6 +174,7 @@ export async function update02(updateInfo: PostComm_002_02): Promise<number> {
     update comm.menus set
       menu_nm = ?
       ,href = ?
+      ,use_yn = ?
       ,sort = ?
       ,update_date = NOW()
     where top_menu_id = ?
@@ -185,6 +190,7 @@ export async function update02(updateInfo: PostComm_002_02): Promise<number> {
     const [result]: any = await db.execute(query, [
       menu_nm,
       href,
+      use_yn,
       sort,
       top_menu_id,
       menu_id,

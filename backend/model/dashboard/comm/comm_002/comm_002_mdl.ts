@@ -29,6 +29,7 @@ export type PostComm_002_02 = {
   menu_id: string;
   menu_nm: string;
   href: string;
+  use_yn: string;
   sort: string;
   insert_id: string;
   insert_date: string;
@@ -44,6 +45,7 @@ export type GetComm_002_02 = {
   menu_id: string;
   menu_nm: string;
   href: string;
+  use_yn: string;
   sort: string;
   insert_id: string;
   insert_date: string;
