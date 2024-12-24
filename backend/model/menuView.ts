@@ -1,7 +1,10 @@
 export type PostMenu = {
     tran_gb:string;
+    top_menu_id:string;
     menu_id: string;
     menu_nm: string;
+    href: string;
+    use_yn: string;
     sort: string;
     insert_id: string;
     insert_date: string;
@@ -10,8 +13,11 @@ export type PostMenu = {
   };
   
   export type GetMenu = {
+    top_menu_id:string;
     menu_id: string;
     menu_nm: string;
+    href: string;
+    use_yn: string;
     sort: string;
     insert_id: string;
     insert_date: string;

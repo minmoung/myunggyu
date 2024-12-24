@@ -12,11 +12,13 @@ export async function searchMenu(req: Request, res: Response) {
 
 // Save
 export async function saveMenu(req: Request, res: Response) {
+//  export async function saveMenu(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    
   const saveInfo: PostMenu = req.body;
   console.log("saveInfo.tran_gb : ",saveInfo.tran_gb);
   let saveId;
   let userCnt;
-  try {
+   try {
 
     if(saveInfo.tran_gb == "insert")
     {
@@ -26,7 +28,7 @@ export async function saveMenu(req: Request, res: Response) {
       {
         saveId = await menuViewData.insertMenu(saveInfo);
       }else{
-        return res.status(201).json({ message: "중복된 메뉴가 존재합니다.\n(" + saveInfo.menu_id + " : " + saveInfo.menu_nm +")"});
+        res.status(201).json({ message: "중복된 메뉴가 존재합니다.\n(" + saveInfo.menu_id + " : " + saveInfo.menu_nm +")"});
       }
 
     }else{
@@ -34,15 +36,17 @@ export async function saveMenu(req: Request, res: Response) {
     }
 
     // 정상적으로 saveId를 얻으면 클라이언트에 응답
-    return res.status(201).json({ saveId });
+    // return res.status(201).json({ saveId });
+    res.status(201).json({ success: true, saveId });
 
   } catch (error) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    return res.status(500).json({ message: "Failed to save menu data" });
+    // return res.status(500).json({ message: "Failed to save menu data" });
+    res.status(500).json({ success: false, message: "Failed to update user" });
   }
-  // res.status(201).json({ saveId: saveId });
+
 }
 
 
@@ -78,7 +82,7 @@ export async function saveTopMenu(req: Request, res: Response) {
       {
         saveId = await menuViewData.insertTopMenu(saveInfo);
       }else{
-        return res.status(201).json({ message: "중복된 메뉴가 존재합니다.\n(" + saveInfo.top_menu_id + " : " + saveInfo.top_menu_nm +")"});
+        res.status(201).json({ message: "중복된 메뉴가 존재합니다.\n(" + saveInfo.top_menu_id + " : " + saveInfo.top_menu_nm +")"});
       }
 
     }else{
@@ -86,15 +90,14 @@ export async function saveTopMenu(req: Request, res: Response) {
     }
 
     // 정상적으로 saveId를 얻으면 클라이언트에 응답
-    return res.status(201).json({ saveId });
+    res.status(201).json({ saveId });
 
   } catch (error) {
     console.error("Error during user save operation:", error);
 
     // 오류 발생 시 응답을 보낸 후 함수 종료
-    return res.status(500).json({ message: "Failed to save menu data" });
+    res.status(500).json({ message: "Failed to save menu data" });
   }
-  // res.status(201).json({ saveId: saveId });
 }
 
 
