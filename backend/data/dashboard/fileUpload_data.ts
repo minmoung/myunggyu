@@ -28,10 +28,28 @@ export async function insertFile(fileInfo: PostFile): Promise<string> {
   } = fileInfo;
 
   const query: string =
-    "insert into files (file_id, file_seq, file_name, file_size,  file_path, sevr_file_name, use_yn, insert_date) values (?, ?, ?, ?, ?, ?, ?, NOW())";
+    `insert into files (
+        file_id, 
+        file_seq,
+        file_name,
+        file_size,
+        file_path,
+        sevr_file_name,
+        use_yn,
+        insert_date) 
+    values (
+        (select coalesce(MAX(file_id), 0) + 1 AS next_file_id
+           from comm.files),
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        NOW()
+    )`;
   return db
     .execute(query, [
-        file_id,
         file_seq,
         file_name,
         file_size,
