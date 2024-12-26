@@ -1,0 +1,797 @@
+
+
+====================== 학사일정관리 =================================
+insert into CD_SCHASCHDL_M
+(
+     SHYR
+	,SMST_CD
+	,PERI_SE_CD
+	,BGNG_YMDHH
+	,END_YMDHH
+	,GDCC_CN
+	,RM
+	,REG_ID
+	,REG_DT
+	,REG_IP
+	,REG_PRGM
+	,MDF_ID
+	,MDF_DT
+	,MDF_IP
+	,MDF_PRGM
+)
+select HK_YEAR
+      ,HK_TERM
+      ,SCDULE_CODE
+      ,S_DATE
+      ,E_DATE
+      ,'' AS GDCC_CN
+      , '' AS RM
+	 , 'MIG' AS REG_ID
+	 , DBO.DFG_SYSDATE() AS REG_DT
+	 , 'MIG' AS REG_IP
+	 , 'MIG' AS REG_PRGM
+	 , 'MIG' AS MDF_ID
+	 , DBO.DFG_SYSDATE() AS MDF_DT
+	 , 'MIG' AS MDF_IP
+	 , 'MIG' AS MDF_PRGM
+from LN_ASDEV.haksa.dbo.haksa_scdule;
+
+
+
+
+
+====================== 업무공통코드관리 =================================
+INSERT INTO CD_DTY_COMM_CD_M
+(
+DTY_SE,
+SPIF_DTY_SE,	
+CD_CATE,	
+CD,		
+CD_NM,	
+CD_ENG_NM,	
+CD_ABBR_NM,	
+CD_ABBR_ENG_NM,	
+USE_YN,	
+ETC_1,	
+ETC_2,	
+ETC_3,	
+ETC_4,	
+ETC_5,	
+ETC_6,	
+ETC_7,	
+ETC_8,	
+ETC_9,	
+ETC_10,	
+SORT_ORD,	
+RM,	
+ASIS_CD,
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+select 'CMM' AS DTY_SE
+      , 'CD' AS SPIF_DTY_SE
+      ,MAJOR_CD AS CD_CATE
+      ,MINOR_CD AS CD
+      ,KOR_NAME AS CD_NM
+      ,ENG_NAME AS CD_ENG_NM
+      ,''
+      ,''
+      ,SYSTEM_YN
+      ,REL_COM1
+      ,REL_COM2
+      ,REL_COM3
+      ,''  -- 기타4
+      ,''
+      ,''
+      ,''
+      ,''
+      ,''
+      ,''  -- 기타10
+      ,NULL   -- 정렬순서
+      ,BIGO
+      ,MAJOR_CD
+      , 'MIG' AS REG_ID
+	  , DBO.DFG_SYSDATE() AS REG_DT
+	  , 'MIG' AS REG_IP
+	  , 'MIG' AS REG_PRGM
+	  , 'MIG' AS MDF_ID
+	  , DBO.DFG_SYSDATE() AS MDF_DT
+	  , 'MIG' AS MDF_IP
+	  , 'MIG' AS MDF_PRGM
+ from LN_ASDEV.haksa.dbo.hsbscd01
+;
+
+
+--( TO-BE 코드로 UPDATE)
+
+UPDATE CD_DTY_COMM_CD_M SET
+CD = FORMAT(B.COL1,'000000') 
+FROM CD_DTY_COMM_CD_M A
+JOIN comm.dbo.업무공통코드관리_20221004_CSV B
+ON A.CD = B.COL2
+WHERE A.ASIS_CD = 'CD_GB'
+
+
+UPDATE CD_DTY_COMM_CD_M SET
+CD_CATE = FORMAT(B.COL1,'000000') 
+FROM CD_DTY_COMM_CD_M A
+JOIN comm.dbo.업무공통코드관리_20221004_CSV B
+ON A.CD_CATE = B.COL2
+WHERE A.ASIS_CD  != 'CD_GB'
+
+
+	
+
+
+
+INSERT INTO comm.dbo.CD_DTY_COMM_CD_M
+(
+DTY_SE,
+SPIF_DTY_SE,	
+CD_CATE,	
+CD,		
+CD_NM,	
+CD_ENG_NM,	
+CD_ABBR_NM,	
+CD_ABBR_ENG_NM,	
+USE_YN,	
+ETC_0,	
+ETC_1,	
+ETC_2,	
+ETC_3,	
+ETC_4,	
+ETC_5,	
+ETC_6,	
+ETC_7,	
+ETC_8,	
+ETC_9,	
+SORT_ORD,	
+RM,	
+ASIS_CD,
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+select 업무구분 AS DTY_SE
+      , 세부업무 AS SPIF_DTY_SE
+      ,'CD_GB' AS CD_CATE
+      ,FORMAT(TO코드,'000000') AS CD
+      ,코드명 AS CD_NM
+      ,'' AS CD_ENG_NM
+      ,''
+      ,''
+      ,'1'
+      ,''
+      ,''
+      ,''
+      ,''  -- 기타4
+      ,''
+      ,''
+      ,''
+      ,''
+      ,''
+      ,''  -- 기타10
+      ,NULL   -- 정렬순서
+      ,''
+      ,코드
+      , 'MIG' AS REG_ID
+	  , DBO.DFG_SYSDATE() AS REG_DT
+	  , 'MIG' AS REG_IP
+	  , 'MIG' AS REG_PRGM
+	  , 'MIG' AS MDF_ID
+	  , DBO.DFG_SYSDATE() AS MDF_DT
+	  , 'MIG' AS MDF_IP
+	  , 'MIG' AS MDF_PRGM
+ from mig.dbo.업무공통코드관리_등록_csv
+ where TO코드 is not null
+ 
+
+
+
+INSERT INTO comm.dbo.CD_DTY_COMM_CD_M
+(
+DTY_SE,
+SPIF_DTY_SE,	
+CD_CATE,	
+CD,		
+CD_NM,	
+CD_ENG_NM,	
+CD_ABBR_NM,	
+CD_ABBR_ENG_NM,	
+USE_YN,	
+SORT_ORD,	
+RM,	
+ASIS_CD,
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+select 'ADM' AS DTY_SE
+      , 'AM' AS SPIF_DTY_SE
+      ,'CD_GB' AS CD_CATE
+      ,FORMAT(COMM_CD,'000000') AS CD
+      ,COMM_CDNM AS CD_NM
+      ,'' AS CD_ENG_NM
+      ,''
+      ,''
+      ,'1'
+      ,NULL   -- 정렬순서
+      ,''
+      ,''
+      , 'MIG' AS REG_ID
+	  , DBO.DFG_SYSDATE() AS REG_DT
+	  , 'MIG' AS REG_IP
+	  , 'MIG' AS REG_PRGM
+	  , 'MIG' AS MDF_ID
+	  , DBO.DFG_SYSDATE() AS MDF_DT
+	  , 'MIG' AS MDF_IP
+	  , 'MIG' AS MDF_PRGM
+ from mig.dbo.업무공통코드관리_인사_csv
+ where COMM_CD is not null
+ ;
+
+
+
+
+INSERT INTO comm.dbo.CD_DTY_COMM_CD_M
+(
+DTY_SE,
+SPIF_DTY_SE,	
+CD_CATE,	
+CD,		
+CD_NM,	
+CD_ENG_NM,	
+CD_ABBR_NM,	
+CD_ABBR_ENG_NM,	
+USE_YN,	
+SORT_ORD,	
+RM,	
+ASIS_CD,
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+SELECT 업무구분
+      , 세부업무
+      ,'CD_GB' AS CD_CATE
+       ,FORMAT(TO코드,'000000') AS CD
+      ,코드명 AS CD_NM
+      ,'' AS CD_ENG_NM
+      ,''
+      ,''
+      ,'1'
+      ,NULL   -- 정렬순서
+      ,''
+      ,코드
+      , 'MIG' AS REG_ID
+	  , DBO.DFG_SYSDATE() AS REG_DT
+	  , 'MIG' AS REG_IP
+	  , 'MIG' AS REG_PRGM
+	  , 'MIG' AS MDF_ID
+	  , DBO.DFG_SYSDATE() AS MDF_DT
+	  , 'MIG' AS MDF_IP
+	  , 'MIG' AS MDF_PRGM
+FROM mig.dbo.업무공통코드관리_입시_csv
+;
+
+
+
+
+INSERT INTO comm.dbo.CD_DTY_C
+(	
+DTY_CATE_CD,	
+DTY_CD,		
+DTY_SE_CD,
+SPIF_DTY_SE_CD,
+DTY_CD_NM,	
+DTY_CD_ENG_NM,	
+DTY_CD_ABBR_NM,	
+DTY_CD_ABBR_ENG_NM,	
+USE_YN,	
+ADD_ETC0_NM,	
+ADD_ETC1_NM,	
+ADD_ETC2_NM,	
+ADD_ETC3_NM,	
+ADD_ETC4_NM,	
+ADD_ETC5_NM,	
+ADD_ETC6_NM,	
+ADD_ETC7_NM,	
+ADD_ETC8_NM,	
+ADD_ETC9_NM,	
+SORT_ORD,	
+RM,	
+ASIS_CD,
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+select 
+      'CD_GB' AS DTY_CATE_CD
+      ,FORMAT(TO코드,'000000') AS DTY_CD
+      , 업무구분 AS DTY_SE_CD
+      ,세부업무 AS SPIF_DTY_SE_CD
+      ,코드명 AS DTY_CD_NM
+      ,'' AS DTY_CD_ENG_NM
+      ,'' as DTY_CD_ABBR_NM
+      ,'' as DTY_CD_ABBR_ENG_NM
+      ,'1'
+      ,''
+      ,''
+      ,''
+      ,''  -- 기타4
+      ,''
+      ,''
+      ,''
+      ,''
+      ,''
+      ,''  -- 기타10
+      ,NULL   -- 정렬순서
+      ,''
+      ,코드
+      , 'MIG' AS REG_ID
+	  , DBO.DFG_SYSDATE() AS REG_DT
+	  , 'MIG' AS REG_IP
+	  , 'MIG' AS REG_PRGM
+	  , 'MIG' AS MDF_ID
+	  , DBO.DFG_SYSDATE() AS MDF_DT
+	  , 'MIG' AS MDF_IP
+	  , 'MIG' AS MDF_PRGM
+ from mig.dbo.업무공통코드관리_입시
+ where TO코드 is not null
+
+
+
+INSERT INTO comm.dbo.CD_DTY_C
+(	
+DTY_CATE_CD,	
+DTY_CD,		
+DTY_SE_CD,
+SPIF_DTY_SE_CD,
+DTY_CD_NM,	
+DTY_CD_ENG_NM,	
+DTY_CD_ABBR_NM,	
+DTY_CD_ABBR_ENG_NM,	
+USE_YN,	
+ADD_ETC0_NM,	
+ADD_ETC1_NM,	
+ADD_ETC2_NM,	
+ADD_ETC3_NM,	
+ADD_ETC4_NM,	
+ADD_ETC5_NM,	
+ADD_ETC6_NM,	
+ADD_ETC7_NM,	
+ADD_ETC8_NM,	
+ADD_ETC9_NM,	
+SORT_ORD,	
+RM,	
+ASIS_CD,
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+select A.DTY_CD AS DTY_CATE_CD,	
+		B.CODE AS DTY_CD,		
+		DTY_SE_CD AS DTY_SE_CD,
+		SPIF_DTY_SE_CD AS SPIF_DTY_SE_CD,
+		description AS DTY_CD_NM,	
+		'' AS DTY_CD_ENG_NM,	
+		'' AS DTY_CD_ABBR_NM,	
+		'' AS DTY_CD_ABBR_ENG_NM,	
+		'1' AS USE_YN,	
+		B.resv1 AS ADD_ETC0_NM,	
+		B.resv2 AS ADD_ETC1_NM,	
+		B.resv3 AS ADD_ETC2_NM,	
+		B.resv4 AS ADD_ETC3_NM,	
+		B.resv5 AS ADD_ETC4_NM,	
+		B.resv6 AS ADD_ETC5_NM,	
+		B.resv7 AS ADD_ETC6_NM,	
+		B.resv8 AS ADD_ETC7_NM,	
+		'' AS ADD_ETC8_NM,	
+		'' AS ADD_ETC9_NM,	
+		NULL AS SORT_ORD,	
+		'' AS RM,	
+		codeClass AS ASIS_CD,
+		'MIG' AS REG_ID,
+		 DBO.DFG_SYSDATE() AS REG_DT,
+		 'MIG' AS REG_IP,
+		 'MIG' AS REG_PRGM,
+		 'MIG' AS MDF_ID,
+		 DBO.DFG_SYSDATE() AS MDF_DT,
+		 'MIG' AS MDF_IP,
+		 'MIG' AS MDF_PRGM
+from comm.dbo.CD_DTY_C A
+INNER JOIN LN_ASDEV.KCUDB_1.dbo.tbCommCode B
+  ON A.ASIS_CD = B.codeClass
+where A.DTY_CATE_CD = 'CD_GB'
+  AND  B.codeClass IN (SELECT 코드  from mig.dbo.업무공통코드관리_입시)
+;
+
+
+
+====================== 소속부서관리 =================================
+
+insert into COMM.dbo.CD_DTY_OGDP_DEPT_M
+(
+	ORGN_CD,	
+	ORGN_NM,	
+	ORGN_ABBR_NM,	
+	ORGN_ENG_NM,	
+	MAJR_NM,	
+	MAJR_ABBR_NM,	
+	MAJR_ENG_NM,	
+	OGDP_SE_CD,	
+	LWTRK_YN,	
+	ORGN_ID,	
+	REG_SERS_CD,	
+	EDU_SERS_SE_CD,	
+	EDU_MIRYFC_CD,	
+	CRT_DE,	
+	ABL_DE,	
+	ORGN_SE_CD,	
+	DEGR_CRSE_CD,	
+	DEGR_CD,	
+	USE_YN,	
+	KCU_SERS_CD,	
+	KEDI_SERS_LRGE_CD,	
+	KEDI_SERS_MID_CD,	
+	KEDI_SERS_SMALL_CD,	
+	PBADMS_SPRT_COAC,	
+	SORT_ORD,	
+	REG_ID,	
+	REG_DT,	
+	REG_IP,	
+	REG_PRGM,	
+	MDF_ID,	
+	MDF_DT,	
+	MDF_IP,	
+	MDF_PRGM
+)
+select JOJIK_CD AS 조직코드
+	,JOJIK_KFNAME AS 조직코드국문명
+	,JOJIK_KSNAME AS 조직국문약어명
+	,JOJIK_EFNAME AS 조직영문명
+	,JOJIK5_KNAME AS 전공국문명
+	,JOJIK5_SNAME AS 전공국문약어명
+	,JOJIK5_ENAME AS 전공영문명
+	,AREA_GB AS 소속구분
+	,LAST_YN AS  최하위구분
+	,JOJIK_ID AS 조직아이디
+	,DRGYEYEUL_CD AS 등록계열코드
+	,KYOYUKBU_GB AS 교육계열구분코드
+	,KYOYUKBU_CD AS 교육부코드
+	,REPLACE(CREATE_DT,'/','') AS 생성일
+	,REPLACE(DELETE_DT,'/','') AS 폐지일
+	,JOJIK_GB AS 조직구분
+	,HAKWI_GB AS 학위과정구분
+	,DEGREE_CD AS 학위종별코드
+	,USE_YN AS 사용여부
+	,KCU_GB AS KCU계열코드
+	,DEPT_MAX_GB AS 교육개발원계열_대
+	,DEPT_MID_GB AS 교육개발원계열_중
+	,DEPT_MIN_GB AS 교육개발원계열_소
+	,JOJIK_TEL AS 행정지원연락처
+	,JOJIK_SEQ AS 정렬순서
+	, 'MIG' AS REG_ID
+	, DBO.DFG_SYSDATE() AS REG_DT
+	, 'MIG' AS REG_IP
+	, 'MIG' AS REG_PRGM
+	, 'MIG' AS MDF_ID
+	, DBO.DFG_SYSDATE() AS MDF_DT
+	, 'MIG' AS MDF_IP
+	, 'MIG' AS MDF_PRGM
+from LN_ASDEV.haksa.dbo.cosycd01
+
+
+
+
+
+====================== 학기학부관리=================================
+
+INSERT INTO CD_SMST_DERT_M
+(
+	SHYR,	
+	SMST_CD,	
+	DERT_CD,	
+	DERT_NM,	
+	DERT_ENG_NM,	
+	DERT_ABBR_NM,	
+	DERT_ENG_ABBR_NM,	
+	SORT_ORD,
+	REG_ID,	
+	REG_DT,	
+	REG_IP,	
+	REG_PRGM,	
+	MDF_ID,	
+	MDF_DT,	
+	MDF_IP,	
+	MDF_PRGM
+)
+select LECT_YEAR AS 년도
+	,case when LECT_TERM = '1' then '10' 
+	      when LECT_TERM = '2' then '20'
+	      when LECT_TERM = '8' then '11'
+	      when LECT_TERM = '9' then '21' end  AS 학기
+	,CLASS_CD AS 학부코드
+	,CLASS_KFNAME AS 학부명_국문
+	,CLASS_EFNAME AS 학부명_영문
+	,CLASS_KSNAME AS 학부명_국문약어
+	,CLASS_ESNAME AS 학부명_영문약어
+	,ORDER_SEQ AS 정렬순서
+	,'MIG' AS 등록자
+	,DBO.DFG_SYSDATE()
+	,'127.0.0.1' AS 등록자IP
+	,'MIG' AS 등록프로그램
+	,'MIG' AS 수정자
+	,DBO.DFG_SYSDATE()
+	,'127.0.0.1' AS 수정자IP
+	,'MIG' AS 수정프로그램
+from LN_ASDEV.haksa.dbo.HSBSPO22
+
+
+
+
+
+====================== 학기학과맵핑관리 =================================
+
+
+INSERT INTO CD_SMST_SBJT_MAPP_MNG_M
+(
+    SHYR	
+	,SMST_CD	
+	,DERT_CD
+	,SBJT_CD
+	,MAJR_SBJT_CD
+	,SORT_ORD
+	,REG_ID	
+	,REG_DT	
+	,REG_IP	
+	,REG_PRGM	
+	,MDF_ID	
+	,MDF_DT	
+	,MDF_IP	
+	,MDF_PRGM
+)
+SELECT LECT_YEAR AS 년도
+	,case when LECT_TERM = '1' then '10' 
+	      when LECT_TERM = '2' then '20'
+	      when LECT_TERM = '8' then '11'
+	      when LECT_TERM = '9' then '21' end AS 학기
+	,CLASS_CD AS 학부코드
+	,L_JOJIK_CD AS 학과코드
+	,S_JOJIK_CD AS 전공학과코드
+	,order_seq AS 정렬순서
+	,'MIG' AS _등록_ID_
+	,DBO.DFG_SYSDATE() AS _등록_일시_
+	,'127.0.0.1' AS _등록_IP_
+	,'MIG' AS _등록_프로그램_
+	,'MIG' AS _수정_ID_
+	,DBO.DFG_SYSDATE() AS _수정_일시_
+	,'127.0.0.1' AS _수정_IP_
+	,'MIG' AS _수정_프로그램_
+FROM LN_ASDEV.haksa.dbo.HSBSPO23
+
+
+
+
+====================== 학기소속부서관리 =================================
+
+INSERT INTO CD_SMST_OGDP_DEPT_M
+(
+	SHYR,
+	SMST_CD,
+	ORGN_CD,	
+	ORGN_NM,	
+	ORGN_ABBR_NM,	
+	ORGN_ENG_NM,	
+	MAJR_NM,	
+	MAJR_ABBR_NM,	
+	MAJR_ENG_NM,	
+	OGDP_SE_CD,	
+	LWTRK_YN,	
+	ORGN_ID,	
+	REG_SERS_CD,	
+	EDU_SERS_SE_CD,	
+	EDU_MIRYFC_CD,	
+	CRT_DE,	
+	ABL_DE,	
+	ORGN_SE_CD,	
+	DEGR_CRSE_CD,	
+	DEGR_CD,	
+	USE_YN,	
+	KCU_SERS_CD,	
+	KEDI_SERS_LRGE_CD,	
+	KEDI_SERS_MID_CD,	
+	KEDI_SERS_SMALL_CD,	
+	PBADMS_SPRT_COAC,	
+	SORT_ORD,	
+	REG_ID,	
+	REG_DT,	
+	REG_IP,	
+	REG_PRGM,	
+	MDF_ID,	
+	MDF_DT,	
+	MDF_IP,	
+	MDF_PRGM
+)
+SELECT A.LECT_YEAR AS 년도
+	,case when LECT_TERM = '1' then '10' 
+	      when LECT_TERM = '2' then '20'
+	      when LECT_TERM = '8' then '11'
+	      when LECT_TERM = '9' then '21' end AS 학기
+	,A.JOJIK_CD AS 조직코드
+	,A.JOJIK_KFNAME AS 조직코드국문명
+	,A.JOJIK_KSNAME AS 조직국문약어명
+	,A.JOJIK_EFNAME AS 조직영문명
+	,A.JOJIK5_KNAME AS 전공국문명
+	,'' AS 전공국문약어명
+	,A.JOJIK5_ENAME AS 전공영문명
+	,B.AREA_GB AS 소속구분
+	,B.LAST_YN AS 최하위여부
+	,A.JOJIK_ID AS 조직아이디
+	,B.DRGYEYEUL_CD AS 등록계열코드
+	,B.KYOYUKBU_GB AS 교육계열구분코드
+	,B.KYOYUKBU_CD AS 교육부코드
+	,REPLACE(B.CREATE_DT,'/','') AS 생성일자
+	,REPLACE(B.DELETE_DT,'/','') AS 폐지일자
+	,A.JOJIK_GB AS 조직구분
+	,B.HAKWI_GB AS 학위과정코드
+	,A.DEGREE_CD AS 학위코드
+	,'Y' AS 사용여부
+	,A.KCU_GB AS KCU계열코드
+	,B.DEPT_MAX_GB AS 교육개발원계열_대
+	,B.DEPT_MID_GB  AS 교육개발원계열_중
+	,B.DEPT_MIN_GB AS 교육개발원계열_소
+	,A.JOJIK_TEL AS 행정지원연락처
+	,A.JOJIK_SEQ AS 정렬순서
+	,'MIG' AS _등록_ID_
+	,DBO.DFG_SYSDATE() AS _등록_일시_
+	,'127.0.0.1' AS _등록_IP_
+	,'MIG' AS _등록_프로그램_
+	,'MIG' AS _수정_ID_
+	,DBO.DFG_SYSDATE() AS _수정_일시_
+	,'127.0.0.1' AS _수정_IP_
+	,'MIG' AS _수정_프로그램_
+FROM LN_ASDEV.haksa.dbo.hsbspo01 A
+ LEFT OUTER JOIN LN_ASDEV.haksa.dbo.cosycd01 B 
+ON A.JOJIK_CD = B.JOJIK_CD
+
+
+
+========================= SMS 문구관리 ========================
+
+-- TO-BE 입학에서 가져온다(추후에도 고차장한데 문의후 이관할것)
+
+INSERT INTO  COMM.DBO.CD_SMS_WORDS_M
+(
+	DTY_SE_CD,	
+SEQ,	
+SMS_TTL_NM,	
+SMS_CN,	
+RM,	
+REG_ID,	
+REG_DT,	
+REG_IP,	
+REG_PRGM,	
+MDF_ID,	
+MDF_DT,	
+MDF_IP,	
+MDF_PRGM
+)
+select 'ENT' AS DTY_SE_CD,
+        ROW_NUMBER() OVER(ORDER BY MSSAGE_SEQ DESC) AS rownum,
+--       MSSAGE_SEQ,
+       SMS_WORDS_INFRML_DSCR AS SMS_TTL_NM,
+       SMS_WORDS_1_CN AS SMS_CN,
+       '' AS RM,
+       REG_ID,	
+		REG_DT,	
+		REG_IP,	
+		REG_PRGM,	
+		MDF_ID,	
+		MDF_DT,	
+		MDF_IP,	
+		MDF_PRGM
+from ENTR.DBO.ER_SMS_WORDS_M
+
+
+
+
+========================== 사용자학과관리 ========================
+
+INSERT INTO comm.dbo.CD_DATA_AUTHRT_M
+(
+	EMPNO,	
+	DTY_ORGN_SE_CD,	
+	ORGN_CD,	
+	USE_YN,
+	REG_ID,	
+	REG_DT,	
+	REG_IP,	
+	REG_PRGM,	
+	MDF_ID,	
+	MDF_DT,	
+	MDF_IP,
+	MDF_PRGM
+)
+SELECT EMP_NO
+      ,'01' AS DTY_ORGN_SE_CD
+      ,ORGN_CD
+      ,'1'
+      ,'MIG'
+      ,COMM.DBO.DFG_SYSDATE()
+      ,'127.0.0.1'
+      ,'MIG'
+      ,'MIG'
+      ,COMM.DBO.DFG_SYSDATE()
+      ,'127.0.0.1'
+      ,'MIG'
+FROM (
+		SELECT DISTINCT COMM.dbo.CD_FN_NVL(mig.dbo.CD_FN_MIG_EMPNO(A.EMP_NO ,'EMPNO'),A.EMP_NO) AS EMP_NO
+		     --, B.KOR_NAME
+		     --, A.JOJIK_CD
+		     , comm.dbo.CD_FN_MIG_TOBE_ORGNCD('2023','',A.JOJIK_CD,'N') AS ORGN_CD
+		  FROM HAKSA.DBO.HSBSUS04 A
+		     , HAKSA.DBO.HSBSUS01 B
+		 WHERE A.EMP_NO = B.EMP_NO
+		UNION ALL
+		SELECT DISTINCT COMM.dbo.CD_FN_NVL(mig.dbo.CD_FN_MIG_EMPNO(A.EMP_NO ,'EMPNO'),A.EMP_NO) AS EMP_NO
+		     --, B.KOR_NAME
+		     --, A.JOJIK_CD
+		     , SUBSTRING(comm.dbo.CD_FN_MIG_TOBE_ORGNCD('2023','',A.JOJIK_CD,'N'),1,4) + '000000' AS ORGN_CD
+		  FROM HAKSA.DBO.HSBSUS04 A
+		     , HAKSA.DBO.HSBSUS01 B
+		 WHERE A.EMP_NO = B.EMP_NO
+		 UNION ALL
+		SELECT DISTINCT COMM.dbo.CD_FN_NVL(mig.dbo.CD_FN_MIG_EMPNO(A.EMP_NO ,'EMPNO'),A.EMP_NO) AS EMP_NO
+		     --, B.KOR_NAME
+		     --, A.JOJIK_CD
+		     , SUBSTRING(comm.dbo.CD_FN_MIG_TOBE_ORGNCD('2023','',A.JOJIK_CD,'N'),1,2) + '00000000' AS ORGN_CD
+		  FROM HAKSA.DBO.HSBSUS04 A
+		     , HAKSA.DBO.HSBSUS01 B
+		 WHERE A.EMP_NO = B.EMP_NO
+		 UNION ALL
+		SELECT DISTINCT COMM.dbo.CD_FN_NVL(mig.dbo.CD_FN_MIG_EMPNO(A.EMP_NO ,'EMPNO'),A.EMP_NO) AS EMP_NO
+		     --, B.KOR_NAME
+		     --, A.JOJIK_CD
+		     , '1000000000' AS ORGN_CD
+		  FROM HAKSA.DBO.HSBSUS04 A
+		     , HAKSA.DBO.HSBSUS01 B
+		 WHERE A.EMP_NO = B.EMP_NO
+		 EXCEPT
+		 SELECT DISTINCT A.EMPNO
+				, A.ORGN_CD
+		  FROM comm.dbo.CD_DATA_AUTHRT_M A
+) M
+WHERE ORGN_CD IS NOT NULL
+ORDER BY EMP_NO 
