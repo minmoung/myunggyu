@@ -87,7 +87,7 @@ export const fileUpload = async (req: Request, res: Response): Promise<void> => 
     // const fileParam: PostFile = filesInfo;
     // PostFile 타입에 맞게 매핑
     const fileParams: PostFile[] = filesInfo.map((file, index) => ({
-        file_id: `file_${index + 1}`, // 고유 ID를 생성 (예: 파일 순서로 ID 생성)
+        file_id: '', // 고유 ID를 생성 (예: 파일 순서로 ID 생성)
         file_seq: `${index + 1}`,     // 파일 순번
         file_name: file.originalName, // 파일 이름
         file_size: file.size.toString(), // 파일 크기를 문자열로 변환
@@ -96,18 +96,30 @@ export const fileUpload = async (req: Request, res: Response): Promise<void> => 
         use_yn: '1',
     }));
 
+    const fileId = await fileUpload_data.selectFileId();
+    let saveFiles: any[] = [];
+
     for (const fileParam of fileParams) {
-        console.log("fileParam  :: ", fileParam);
-        const fileInfoSelect = await fileUpload_data.insertFile(fileParam);
-        
-        // if (userCnt[0].cnt < 1) {
-        // const saveId = await codeViewData.insertUpCode(saveInfo);
-        // saveIds.push(saveId);
-        // } else {
-        // duplicateInfos.push(saveInfo); // 중복된 데이터 저장
-        // }
+
+      console.log("fileId   :: " , fileId);
+
+      const param = {
+        ...fileParam,
+        file_id: fileId[0].file_id,
+      };
+      
+      const fileInfoSelect:PostFile = await fileUpload_data.insertFile(param);
+      saveFiles.push(fileInfoSelect);
+            
+      // if (userCnt[0].cnt < 1) {
+      // const saveId = await codeViewData.insertUpCode(saveInfo);
+      // saveIds.push(saveId);
+      // } else {
+      // duplicateInfos.push(saveInfo); // 중복된 데이터 저장
+      // }
     }
 
+    console.log("saveFiles  :: " , saveFiles);
     // 파일 정보 검색 비동기 호출
     // const fileInfoSelect: Array<GetFile> = await fileUpload_data.insertFile(fileParam);
 
@@ -115,7 +127,7 @@ export const fileUpload = async (req: Request, res: Response): Promise<void> => 
     res.status(200).json({
       message: "File uploaded successfully!",
       file: filesInfo,
-      fileInfo: filesInfo,
+      fileInfo: saveFiles,
     });
     
   } catch (error) {
