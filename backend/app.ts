@@ -9,6 +9,8 @@ const app = express();
 app.use(cors());
 // 미들웨어 설정
 app.use(express.json());
+// 정적 파일 경로 설정
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const routesDirectory = path.join(__dirname, 'routes');
 

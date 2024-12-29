@@ -4,7 +4,17 @@ import { PostComm_001, GetComm_001, GetCnt } from "../../../../model/dashboard/c
 
 export async function searchUser(): Promise<Array<GetComm_001>> {
   const query: string =
-    "select row_number() over (order by user_id desc) as row_id, user_id, user_name as user_nm, email, phone_no, pwd from users";
+    `select row_number() over (order by a.user_id desc) as row_id, 
+            a.user_id, 
+            a.user_name as user_nm, 
+            a.email, 
+            a.phone_no, 
+            a.pwd,
+            a.file_id,
+            b.sevr_file_name as file_path 
+       from comm.users a
+	 left join comm.files b
+     on a.file_id = b.file_id`;
   // 쿼리 실행 전에 SQL과 파라미터를 콘솔에 출력
   console.log('Executing SQL:', query);
   return db.execute(query).then((result: any) => result[0]);

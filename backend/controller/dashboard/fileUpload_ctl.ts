@@ -24,6 +24,8 @@ const ensureUploadsFolderExists = () => {
   }
 };
 
+// 파일 정보를 관리할 Map 생성
+const fileMetadata = new Map<string, string>();
 
 // multer 설정
 const storage = multer.diskStorage({
@@ -36,7 +38,11 @@ const storage = multer.diskStorage({
       const utf8Name = Buffer.from(file.originalname, "latin1").toString("utf8");  // 한글 깨짐 방지
       file.originalname = utf8Name; 
       console.log("utf8Name   ::", utf8Name);
-      const uniqueName = `${Date.now()}-${file.originalname}`;
+      const sevrFileName = `${Date.now()}-${file.originalname}`;
+      const uniqueName = sevrFileName;
+
+      fileMetadata.set("sevrFileName", sevrFileName);
+      // (file as any).sevrFileName = sevrFileName; // 타입 단언을 사용해 추가 속성 설정
       cb(null, uniqueName); // 파일 이름 지정
     },
   });
@@ -92,7 +98,7 @@ export const fileUpload = async (req: Request, res: Response): Promise<void> => 
         file_name: file.originalName, // 파일 이름
         file_size: file.size.toString(), // 파일 크기를 문자열로 변환
         file_path: '',
-        sevr_file_name: '',
+        sevr_file_name: fileMetadata.get("sevrFileName") || file.originalName,
         use_yn: '1',
     }));
 
