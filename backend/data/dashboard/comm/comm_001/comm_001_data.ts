@@ -38,13 +38,14 @@ export async function insertUser(userInfo: PostComm_001): Promise<string> {
     phone_no,
     email,
     pwd,
+    file_id,
   } = userInfo;
 
   console.log("userInfo ::" , userInfo);
 
   const query: string =
     // "INSERT INTO tb_admin VALUES(2,?,?,?,?,?,?,?,?,?,?,?,NOW(),NOW())";
-    "INSERT INTO users (user_id, user_name, email, phone_no, pwd) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO users (user_id, user_name, email, phone_no, pwd, file_id) VALUES (?, ?, ?, ?, ?, ?)";
   return db
     .execute(query, [
       user_id,
@@ -53,6 +54,7 @@ export async function insertUser(userInfo: PostComm_001): Promise<string> {
       phone_no,
       email,
       pwd,
+      file_id,
     ])
     .then((result: any) => result[0].insertId);
 }
@@ -69,6 +71,7 @@ export async function updateUser(userInfo: PostComm_001): Promise<number> {
     phone_no,
     email,
     pwd,
+    file_id,
   } = user;
 
   const query: string = `
@@ -77,6 +80,7 @@ export async function updateUser(userInfo: PostComm_001): Promise<number> {
       ,phone_no = ?
       ,email = ?
       ,pwd = ?
+      ,file_id = ?
     where user_id = ?
   `;
 
@@ -92,6 +96,7 @@ export async function updateUser(userInfo: PostComm_001): Promise<number> {
       phone_no,
       email,
       pwd,
+      file_id,
       user_id,
     ]);
 

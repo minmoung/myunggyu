@@ -7,7 +7,7 @@ export type PostComm_001 = {
   phone_no: string;
   email: string;
   pwd: string;
-  
+  file_id: string;
 };
 
 export type GetComm_001 = {
@@ -18,6 +18,7 @@ export type GetComm_001 = {
   phone_no: string;
   email: string;
   pwd: string;
+  file_id: string;
 };
 
 export type GetCnt = {
