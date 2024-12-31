@@ -10,5 +10,7 @@ export type GetSign = {
   pwdCk: string;
   email: string;
   phone_no: string;
+  file_id: string;
+  file_path: string;
   created_at: string;
 };
